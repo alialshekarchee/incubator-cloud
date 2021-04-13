@@ -1,7 +1,13 @@
 const express = require('express');
-const app = express();
+const router = express.Router();
+const bcrypt = require('bcryptjs');
+const passport = require('passport');
+// Load User model
+const User = require('../models/User');
+const { forwardAuthenticated } = require('../config/auth');
 
 
-app.get('/ws', (req, res) => {
-    res.sendFile(__dirname + '../index.html');
+router.get('/ws', (req, res) => {
+    console.log('ws')
+    // res.sendFile(__dirname + '../index.html');
 });
