@@ -5,8 +5,11 @@ const passport = require('passport');
 const flash = require('connect-flash');
 const session = require('express-session');
 
+
 const app = express();
 
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 // Passport Config
 require('./config/passport')(passport);
 
@@ -56,7 +59,26 @@ app.use(function(req, res, next) {
 // Routes
 app.use('/', require('./routes/index.js'));
 app.use('/users', require('./routes/users.js'));
+app.use('/ws', require('./routes/ws.js'));
+
+
+
+
+io.on('connection', (socket) => {
+  console.log('a user connected: ' + socket.id);
+  // saveConnection(socket.id, "token asdfhikafdnj");
+  // handle the event sent with socket.send()
+
+  socket.on('message', (msg) => {
+      console.log('message from ( '+socket.id+' ): ' + msg);
+    });
+
+  socket.on('disconnect', () => {
+      console.log('user disconnected: ' + socket.id);
+      // deleteConnection(socket.id)
+    });
+});
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, console.log(`Server running on  ${PORT}`));
+http.listen(PORT, console.log(`Server running on  ${PORT}`));
