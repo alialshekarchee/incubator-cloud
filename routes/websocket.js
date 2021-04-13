@@ -7,7 +7,7 @@ const User = require('../models/User');
 const { forwardAuthenticated } = require('../config/auth');
 
 
-router.get('/ws', (req, res) => {
+router.get('/', (req, res) => {
     console.log('ws')
     // res.sendFile(__dirname + '../index.html');
 });
