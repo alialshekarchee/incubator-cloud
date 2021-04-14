@@ -1,16 +1,11 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
 
 const UserSchema = new mongoose.Schema({
-  name: {
+  connection: {
     type: String,
     required: true
   },
-  email: {
-    type: String,
-    required: true
-  },
-  password: {
+  token: {
     type: String,
     required: true
   },
@@ -20,7 +15,6 @@ const UserSchema = new mongoose.Schema({
   }
 });
 
+const Connection = mongoose.model('Connection', UserSchema);
 
-const User = mongoose.model('User', UserSchema);
-
-module.exports = User;
+module.exports = Connection;

@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const flash = require('connect-flash');
 const session = require('express-session');
-
+const Connection = require('./models/Connection');
 
 const app = express();
 
@@ -66,6 +66,11 @@ app.use('/ws', require('./routes/websocket.js'));
 
 io.on('connection', (socket) => {
   console.log('a user connected: ' + socket.id);
+  // Load Connection model
+  var connection = socket.id;
+  var token = 'token token';
+const conn = new Connection({connection, token});
+conn.save().then(() => console.log('connection saved!')).catch((err) => console.log(err));
   // saveConnection(socket.id, "token asdfhikafdnj");
   // handle the event sent with socket.send()
 
@@ -75,10 +80,12 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
       console.log('user disconnected: ' + socket.id);
+      conn.delete().then(() => console.log('connection deleted!')).catch((err) => console.log(err));
       // deleteConnection(socket.id)
     });
+
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5050;
 
 http.listen(PORT, console.log(`Server running on  ${PORT}`));
