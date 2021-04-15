@@ -5,7 +5,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
       var socket = io();      
-      socket.on('connect', () => socket.emit('payload', {token: '<%= token %>', client: 'viewer'}));
+      socket.on('connect', () => socket.emit('payload', {token: '<%= token %>', client: 'viewer', request: 'register'}));
       var form = document.getElementById('form');
       var input = document.getElementById('input');
     

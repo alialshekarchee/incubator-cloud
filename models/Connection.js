@@ -9,6 +9,11 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  client: {
+    type: String,
+    required: true,
+    default: 'viewer'
+  },
   date: {
     type: Date,
     default: Date.now

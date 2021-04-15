@@ -93,13 +93,29 @@ router.get('/logout', (req, res) => {
 });
 
 
+// Obtain Token
+router.post('/auth', (req, res) => {
+  // const { email, password } = req.body;
+  User.findOne({ email: req.body.email }).then(user => {
+    if (!user) {
+      res.json({ msg: 'Invalid account' });
+    } else {
+      // Match password
+      bcrypt.compare(req.body.password, user.password, (err, isMatch) => {
+        if (err) throw err;
+        if (isMatch) {
+          res.json({ msg: 'success', token: user.token });
+        } else {
+          res.json({ msg: 'Incorrect password' });
+        }
+      });
 
-
-
-
-
-
-
+    }
+  }).catch(err => {
+    console.log(err);
+    res.json({ msg: 'server error' });
+  })
+});
 
 
 module.exports = router;
