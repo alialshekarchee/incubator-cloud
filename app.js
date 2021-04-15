@@ -15,6 +15,8 @@ require('./config/passport')(passport);
 
 // DB Config
 const db = require('./config/keys').mongoURI;
+const User = require('./models/User');
+const Device = require('./models/Device');
 
 // Connect to MongoDB
 mongoose
@@ -66,22 +68,79 @@ app.use('/users', require('./routes/users.js'));
 
 io.on('connection', (socket) => {
   console.log('a user connected: ' + socket.id);
-// Load Connection model
-const conn = new Connection();
+  // Load Connection model
+  const conn = new Connection();
   // handle the event sent with socket.send()
 
-  socket.on('chat', msg => {
-    console.log('message from ( ' + socket.id + ' ): ' + msg);
-  });
+  // socket.on('chat', msg => {
+  //   console.log('message from ( ' + socket.id + ' ): ' + msg);
+  // });
 
-  socket.on('payload', payload => {   
-    if (payload.client === 'device') {
-      console.log('ESP connected');
-    } 
-    conn.connection = socket.id;
-    conn.token = payload.token;
-    conn.save().then(() => console.log('connection saved!')).catch((err) => console.log(err));
-    console.log('token from ( ' + socket.id + ' ): ' + payload.token);
+  socket.on('payload', payload => {
+    User.findOne({ token: payload.token })
+      .then(user => {
+        if (!user) {
+          socket.emit({ msg: 'invalid token' });
+          console.log('invalid access');
+          socket.disconnect();
+        } else {
+          if (payload.request === 'register') {
+            if (payload.client !== 'viewer') {
+              Device.findOne({uuid: payload.client})
+                .then(device => {
+                  if (!device) {
+                    socket.emit({ msg: 'device not registered' });
+                    console.log('device not registered');
+                    socket.disconnect();
+                  } else {
+                    device.connection = socket.id;
+                    device.save().then(() => console.log('connection saved!')).catch((err) => console.log(err));
+                  }
+                })
+                .catch(err => {
+                  console.log(err);
+                  socket.emit({ msg: 'server error' });
+                });
+            } else {
+              conn.connection = socket.id;
+              conn.token = payload.token;
+              conn.client = payload.client;
+              conn.save().then(() => console.log('connection saved!')).catch((err) => console.log(err));
+              console.log('token from ( ' + socket.id + ' ): ' + payload.token);
+            }            
+          } else {
+            if (payload.client !== 'viewer') {
+              Connection.find({ token: payload.token })
+                .then(connections => {
+                  connections.forEach(conn => {
+                    conn.connection.emit(payload.request);
+                  });
+                })
+                .catch(err => {
+                  console.log(err);
+                  socket.emit({ msg: 'server error' });
+                });
+            } else {
+              Device.find({ token: payload.token })
+                .then(devices => {
+                  devices.forEach(device => {
+                    if (device.uuid === payload.client) {
+                      device.connection.emit(payload.request);
+                    }
+                  });                  
+                })
+                .catch(err => {
+                  console.log(err);
+                  socket.emit({ msg: 'server error' });
+                });
+            }
+          }          
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        socket.emit({ msg: 'server error' });
+      });
   });
 
   socket.on('disconnect', () => {
