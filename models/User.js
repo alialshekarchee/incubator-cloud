@@ -14,6 +14,15 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  token: {
+    type: String,
+    required: false
+  },
+  role: {
+    type: String,
+    required: false,
+    default: 'peasant'
+  },
   date: {
     type: Date,
     default: Date.now

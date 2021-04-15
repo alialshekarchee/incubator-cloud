@@ -8,7 +8,7 @@ const Connection = require('./models/Connection');
 
 const app = express();
 
-const http = require('http').Server(app);
+const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 // Passport Config
 require('./config/passport')(passport);
@@ -20,7 +20,7 @@ const db = require('./config/keys').mongoURI;
 mongoose
   .connect(
     db,
-    { useNewUrlParser: true ,useUnifiedTopology: true}
+    { useNewUrlParser: true, useUnifiedTopology: true }
   )
   .then(() => console.log('MongoDB Connected'))
   .catch(err => console.log(err));
@@ -49,7 +49,7 @@ app.use(passport.session());
 app.use(flash());
 
 // Global variables
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   res.locals.success_msg = req.flash('success_msg');
   res.locals.error_msg = req.flash('error_msg');
   res.locals.error = req.flash('error');
@@ -59,30 +59,35 @@ app.use(function(req, res, next) {
 // Routes
 app.use('/', require('./routes/index.js'));
 app.use('/users', require('./routes/users.js'));
-app.use('/ws', require('./routes/websocket.js'));
+
 
 
 
 
 io.on('connection', (socket) => {
   console.log('a user connected: ' + socket.id);
-  // Load Connection model
-  var connection = socket.id;
-  var token = 'token token';
-const conn = new Connection({connection, token});
-conn.save().then(() => console.log('connection saved!')).catch((err) => console.log(err));
-  // saveConnection(socket.id, "token asdfhikafdnj");
+// Load Connection model
+const conn = new Connection();
   // handle the event sent with socket.send()
 
-  socket.on('message', (msg) => {
-      console.log('message from ( '+socket.id+' ): ' + msg);
-    });
+  socket.on('chat', msg => {
+    console.log('message from ( ' + socket.id + ' ): ' + msg);
+  });
+
+  socket.on('payload', payload => {   
+    if (payload.client === 'device') {
+      console.log('ESP connected');
+    } 
+    conn.connection = socket.id;
+    conn.token = payload.token;
+    conn.save().then(() => console.log('connection saved!')).catch((err) => console.log(err));
+    console.log('token from ( ' + socket.id + ' ): ' + payload.token);
+  });
 
   socket.on('disconnect', () => {
-      console.log('user disconnected: ' + socket.id);
-      conn.delete().then(() => console.log('connection deleted!')).catch((err) => console.log(err));
-      // deleteConnection(socket.id)
-    });
+    console.log('user disconnected: ' + socket.id);
+    conn.delete().then(() => console.log('connection deleted!')).catch((err) => console.log(err));
+  });
 
 });
 
