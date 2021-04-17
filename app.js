@@ -24,7 +24,20 @@ mongoose
     db,
     { useNewUrlParser: true, useUnifiedTopology: true }
   )
-  .then(() => console.log('MongoDB Connected'))
+  .then(() => {
+    console.log('MongoDB Connected');
+    // Flush the connection table on server start
+    Connection.find()
+    .then(connections => {
+      connections.forEach(conn => {
+        conn.delete().then().catch((err) => console.log(err));
+      });
+    })
+    .catch(err => {
+      console.log(err);
+      socket.emit({ msg: 'server error' });
+    });
+  })
   .catch(err => console.log(err));
 
 // EJS
@@ -62,21 +75,14 @@ app.use(function (req, res, next) {
 app.use('/', require('./routes/index.js'));
 app.use('/users', require('./routes/users.js'));
 
-
-
-
-
+// Websocket implemintation
 io.on('connection', (socket) => {
   console.log('a user connected: ' + socket.id);
   // Load Connection model
   const conn = new Connection();
-  // handle the event sent with socket.send()
-
-  // socket.on('chat', msg => {
-  //   console.log('message from ( ' + socket.id + ' ): ' + msg);
-  // });
 
   socket.on('payload', payload => {
+    // const { token, client, request, destination, msg } = payload;
     User.findOne({ token: payload.token })
       .then(user => {
         if (!user) {
@@ -84,7 +90,7 @@ io.on('connection', (socket) => {
           console.log('invalid access');
           socket.disconnect();
         } else {
-          if (payload.request === 'register') {
+          if (payload.request.msg === 'register') {
             if (payload.client !== 'viewer') {
               Device.findOne({uuid: payload.client})
                 .then(device => {
@@ -112,8 +118,9 @@ io.on('connection', (socket) => {
             if (payload.client !== 'viewer') {
               Connection.find({ token: payload.token })
                 .then(connections => {
+                  console.log(`${connections.length} clients available`);
                   connections.forEach(conn => {
-                    conn.connection.emit(payload.request);
+                    io.to(conn.connection).emit('payload', payload.request.msg);
                   });
                 })
                 .catch(err => {
@@ -124,8 +131,9 @@ io.on('connection', (socket) => {
               Device.find({ token: payload.token })
                 .then(devices => {
                   devices.forEach(device => {
-                    if (device.uuid === payload.client) {
-                      device.connection.emit(payload.request);
+                    if (device.uuid === payload.request.destination) {
+                      io.to(device.connection).emit('payload', payload.request.msg);
+                      console.log(payload.request.msg);
                     }
                   });                  
                 })
@@ -149,6 +157,9 @@ io.on('connection', (socket) => {
   });
 
 });
+
+// const d = new Device({name: 'mock esp', token: 'eyJhbGciOiJIUzI1NiJ9.ZGV2QGlxdC5ydW4.KJLx3aW-KU2MxUvLTD9BoR2anhtIiJU3Hf0SbW3Kvis', uuid: '9999'});
+// d.save().then(console.log('device created')).catch(err => console.log(err));
 
 const PORT = process.env.PORT || 5050;
 

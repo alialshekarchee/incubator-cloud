@@ -1,20 +1,33 @@
-<ul id="messages"></ul>
-    <form id="form" action="">
-      <input id="input" autocomplete="off" /><button>Send</button>
-    </form>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-      var socket = io();      
-      socket.on('connect', () => socket.emit('payload', {token: '<%= token %>', client: 'viewer', request: 'register'}));
-      var form = document.getElementById('form');
-      var input = document.getElementById('input');
-    
-      form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        if (input.value) {
-          socket.emit('chat', input.value);
-          input.value = '';
-        }
-      });
-    </script>
-  </body>
+<form id="form" action="">
+  <span>Message (command)</span><input id="msg" autocomplete="off" />
+  <span>destination (uuid)</span><input type="text" id="destination" />
+  <button>Send</button>
+</form>
+<ul id="list"></ul>
+
+</ul>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+
+  var form = document.getElementById('form');
+  var message = document.getElementById('msg');
+  var dest = document.getElementById('destination');
+  var list = document.getElementById('list');
+
+  var socket = io();
+  socket.on('connect', () => socket.emit('payload', { token: '<%= token %>', client: 'viewer', request: { destination: '', msg: 'register' } }));
+
+  socket.on('payload', payload => {
+    // console.log(payload);
+    list.innerHTML += '<li>' + payload + '</li>'
+  });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (message.value) {
+      socket.emit('payload', { token: '<%= token %>', client: 'viewer', request: { destination: dest.value, msg: message.value } });
+      message.value = '';
+    }
+  });
+</script>
+</body>

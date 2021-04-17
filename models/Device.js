@@ -8,7 +8,8 @@ const UserSchema = new mongoose.Schema({
     },
     connection: {
         type: String,
-        required: false
+        required: true,
+        default: 'placeholder'
     },
     token: {
         type: String,

@@ -1,0 +1,32 @@
+<form id="form" action="">
+    <span>Message (command)</span><input id="msg" autocomplete="off" />
+
+    <button>Send</button>
+  </form>
+  <ul id="list"></ul>
+  
+  </ul>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+  
+    var form = document.getElementById('form');
+    var message = document.getElementById('msg');
+
+    var list = document.getElementById('list');
+  
+    var socket = io();
+    socket.on('connect', () => socket.emit('payload', { token: '<%= token %>', client: '9999', request: { destination: '', msg: 'register' } }));
+  
+    socket.on('payload', payload => {
+      list.innerHTML += '<li>' + payload + '</li>'
+    });
+  
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (message.value) {
+        socket.emit('payload', { token: '<%= token %>', client: '9999', request: { destination: '', msg: message.value } });
+        message.value = '';
+      }
+    });
+  </script>
+  </body>
