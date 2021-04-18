@@ -1,5 +1,43 @@
 <h1 class="mt-4">Dashboard</h1>
-<p class="lead mb-3">Welcome Admin <%= user.name %></p>
+<p class="lead mb-3">Welcome Admin <%= user.name %>
+</p>
 <a href="/ws" class="btn btn-secondary">viewer</a>
 <a href="/wss" class="btn btn-secondary">esp</a>
 <a href="/users/logout" class="btn btn-secondary">Logout</a>
+
+<h2 style="margin: 10px 0px 0px 0px;">This is users table</h2>
+
+<table class="table" style="margin: 5px 0px 0px 0px;">
+    <thead>
+        <th scope="col">#</th>
+        <th scope="col">Name</th>
+        <th scope="col">Email</th>
+        <th scope="col">Role</th>
+        <th scope="col">Created on</th>
+    </thead>
+    <tbody>
+        <% if(users){ %>
+            <% var i = 0; %>
+            <% users.forEach(user => { %>
+                <% i++; %>
+                <tr>
+                    <th scope="row">
+                        <%= i %> 
+                    </th>
+                    <td>
+                        <%= user.name %>
+                    </td>
+                    <td>
+                        <%= user.email %>
+                    </td>
+                    <td>
+                        <%= user.role %>
+                    </td>
+                    <td>
+                        <%= user.date %>
+                    </td>
+                </tr>
+                <% }); %>
+                    <% } %>
+    </tbody>    
+</table>
