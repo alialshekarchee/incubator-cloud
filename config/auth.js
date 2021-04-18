@@ -29,13 +29,25 @@ module.exports = {
   },
   ensureAuthenticatedByJWT: (req, res, next) => {
     User.find().then(users => {
-      console.log(users);
-      // users.forEach(user => {
-      //   if (req.token === user.token) {
-      //     next();
-      //   }
-      // });
-      res.status(403);
+      if (!req.headers['x-access-token']) return res.status(401).send({ auth: false, message: 'No token provided.' });
+      var usr;
+      users.forEach(user => {
+        if (req.headers['x-access-token'] === user.token) {
+          usr = user;          
+        }
+      });
+      if (!usr) {
+        return res.status(401).send({ auth: false, message: 'Failed to authenticate token.' });
+      } else {
+        return next();
+      }
+      
+    }).catch(err => console.log(err));
+  },
+  ensureAdminByJWT: (req, res, next) => {
+    User.findOne({ token: req.headers['x-access-token'] }).then(user => {
+      if (user.role !== 'god') return res.status(401).send({ auth: false, message: 'Invalid permission' });
+      return next();
     }).catch(err => console.log(err));
   }
 };
