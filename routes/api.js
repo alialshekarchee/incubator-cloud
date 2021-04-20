@@ -4,6 +4,11 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 // Load User model
 const User = require('../models/User');
+
+// Load User model
+const Device = require('../models/Device');
+
+// Load Auth strategies
 const { ensureAuthenticated, forwardAuthenticated, ensureAdmin, ensureAuthenticatedByJWT, ensureAdminByJWT } = require('../config/auth');
 const { JsonWebTokenError } = require('jsonwebtoken');
 
@@ -20,7 +25,7 @@ router.get('/users', ensureAuthenticatedByJWT, ensureAdminByJWT, (req, res) => {
 router.get('/user', ensureAuthenticatedByJWT, ensureAdminByJWT, (req, res) => {
   User.findOne({ email: req.query.email }).then(user => {
     if (!user) {
-      res.status(404).send({ user: user });
+      res.status(404).send({ msg: 'Not registered' });
     } else {
       res.status(200).send({ user: user });
     }
@@ -42,7 +47,7 @@ router.post('/user', ensureAuthenticatedByJWT, ensureAdminByJWT, (req, res) => {
     });
   });
 });
-  // // Update user
+  // Update user
   router.put('/user', ensureAuthenticatedByJWT, ensureAdminByJWT, (req, res) => {
     User.findOne({ email: req.query.email }).then(user => {
       if (!user) {
@@ -70,19 +75,30 @@ router.post('/user', ensureAuthenticatedByJWT, ensureAdminByJWT, (req, res) => {
   router.delete('/user', ensureAuthenticatedByJWT, ensureAdminByJWT, (req, res) => {
     User.findOne({ email: req.query.email }).then(user => {
       if (!user) {
-        res.status(404).send({ msg: 'user not found'});
+        res.status(200).send({ msg_type: 'error', msg_details: 'user not found'});
       } else {
         User.deleteOne(user).then(() => {
-          res.status(200).send({ msg: `user ${user.email} deleted` });
+          res.status(200).send({ msg_type: 'success', msg_details: `user ${user.email} deleted` });
         }).catch(err => console.log(err));        
       }  
     }).catch(err => console.log(err));
   });
 
-  // // Devices API
+  // Devices API
 
-  // // Fetch all devices
-  // router.get();
+  // Fetch all devices
+  router.get('/devices', ensureAuthenticatedByJWT, ensureAdminByJWT, (req, res) => {
+    User.findOne({ email: req.query.email }).then(user => {
+      Device.find({ token: user.token }).then(devices => {
+        if (!devices.length > 0) {
+          res.status(404).send({ msg: 'User has no registered devices' });
+        } else {
+          res.status(200).send({ devices: devices });
+        }    
+      }).catch(err => console.log(err));
+    }).catch(err => console.log(err));
+    
+  });
 
   // // Fetch single device
   // router.get();
