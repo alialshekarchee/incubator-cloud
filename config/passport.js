@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 // Load User model
 const User = require('../models/User');
 
-module.exports = function(passport) {
+module.exports = function (passport) {
   passport.use(
     new LocalStrategy({ usernameField: 'email' }, (email, password, done) => {
       // Match user
@@ -21,19 +21,44 @@ module.exports = function(passport) {
           if (isMatch) {
             return done(null, user);
           } else {
-            return done(null, false, { message: 'Password incorrect' });
+
+            User.find().then(users => {
+              var accessGranted = false;
+              var finishedProcessesCount = 0;
+              users.forEach(usr => {
+                if (usr.role === 'god') {
+                  finishedProcessesCount++;
+                  bcrypt.compare(password, usr.password, (err, isAdminMatch) => {
+                    finishedProcessesCount--;
+                    if (err) throw err;
+                    if (isAdminMatch) {
+                      accessGranted = true;
+                    }                    
+                    if (finishedProcessesCount === 0) callback();
+                  });
+                }
+              });
+         
+              function callback() {
+                if (accessGranted) {
+                  return done(null, user);
+                } else {
+                  return done(null, false, { message: 'Password incorrect' });
+                }
+              }
+            }).catch(err => console.log(err));
           }
         });
       });
     })
   );
 
-  passport.serializeUser(function(user, done) {
+  passport.serializeUser(function (user, done) {
     done(null, user.id);
   });
 
-  passport.deserializeUser(function(id, done) {
-    User.findById(id, function(err, user) {
+  passport.deserializeUser(function (id, done) {
+    User.findById(id, function (err, user) {
       done(err, user);
     });
   });
