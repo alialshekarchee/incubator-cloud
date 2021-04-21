@@ -17,20 +17,20 @@ router.get('/dashboard', ensureAuthenticated, (req, res) => {
     user.save().then().catch(err => console.log(err));
     if (user.role === 'god') {
       if (typeof req.query.email !== 'undefined' && req.query.email) {
-        User.findOne({email: req.query.email}).then(usr => {
+        User.findOne({ email: req.query.email }).then(usr => {
           res.render('dashboard', { user: usr });
-        }).catch(err => console.log(err)); 
-        
+        }).catch(err => console.log(err));
+
       } else {
         User.find().then(users => {
-          res.render('admindashboard', { user: user, users: users, msg:{msg_type:'', msg_details:''} });
+          res.render('admindashboard', { user: user, users: users, msg: { msg_type: '', msg_details: '' } });
         }).catch(err => console.log(err));
-             
-      }    
+
+      }
     } else {
       res.render('dashboard', { user: req.user });
     }
-  }).catch(err => console.log(err));  
+  }).catch(err => console.log(err));
 });
 
 // Admin Dashboard
@@ -40,7 +40,6 @@ router.get('/admindashboard', ensureAuthenticated, ensureAdmin, (req, res) => {
     msg.msg_type = JSON.parse(req.query.msg).msg_type;
     msg.msg_details = JSON.parse(req.query.msg).msg_details;
   }
-
   const token = jwt.sign(req.user.email, 'top-secret');
   User.find().then(users => {
     res.render('admindashboard', { user: req.user, users: users, msg: msg });
