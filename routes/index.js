@@ -35,19 +35,25 @@ router.get('/dashboard', ensureAuthenticated, (req, res) => {
 
 // Admin Dashboard
 router.get('/admindashboard', ensureAuthenticated, ensureAdmin, (req, res) => {
-  var msg = { msg_type: '', msg_details: '' };
-  if (typeof req.query.msg !== 'undefined' && req.query.msg) {
-    msg.msg_type = JSON.parse(req.query.msg).msg_type;
-    msg.msg_details = JSON.parse(req.query.msg).msg_details;
-  }
   const token = jwt.sign(req.user.email, 'top-secret');
   User.find().then(users => {
-    res.render('admindashboard', { user: req.user, users: users, msg: msg });
+    res.render('admindashboard', { user: req.user, users: users });
   }).catch(err => console.log(err));
 
   User.findOne({ email: req.user.email }).then(user => {
     user.token = token;
     user.save().then().catch(err => console.log(err));
+  }).catch(err => console.log(err));
+});
+
+router.post('/admindashboard', ensureAuthenticated, ensureAdmin, (req, res) => {
+  var msg = { msg_type: '', msg_details: '' };
+  if (typeof req.body.msg !== 'undefined' && req.body.msg) {
+    msg.msg_type = JSON.parse(req.body.msg).msg_type;
+    msg.msg_details = JSON.parse(req.body.msg).msg_details;
+  }
+  User.find().then(users => {
+    res.render('admindashboard', { user: req.user, users: users, msg: msg });
   }).catch(err => console.log(err));
 });
 

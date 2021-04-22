@@ -2,9 +2,11 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
+const fs = require('fs');
 // Load User model
 const User = require('../models/User');
-const { forwardAuthenticated } = require('../config/auth');
+const { forwardAuthenticated, ensureAuthenticated, ensureAuthenticatedByJWT } = require('../config/auth');
+
 
 // Login Page
 router.get('/login', forwardAuthenticated, (req, res) => res.render('login'));
@@ -117,5 +119,42 @@ router.post('/auth', (req, res) => {
   })
 });
 
+// File upload
+router.post('/upload', ensureAuthenticated, function(req, res) {
+  let sampleFile;
+  let uploadPath;
+
+  if (!req.body.email)
+    return res.status(200).redirect('/dashboard');
+  if (!req.files || Object.keys(req.files).length === 0) {
+    return res.status(200).redirect('/dashboard');
+  }
+
+
+  sampleFile = req.files.sampleFile;
+  uploadPath = './assets/images/' + sampleFile.name;
+  User.findOne({ email: req.body.email }).then(user => {
+    if (sampleFile.mimetype !== 'image/jpg' && sampleFile.mimetype !== 'image/jpeg' && sampleFile.mimetype !== 'image/png') {
+      console.log(sampleFile.mimetype)
+      return res.status(200).redirect('/dashboard');
+    }  
+    var oldPhoto = './assets' + user.photo; 
+    fs.unlink(oldPhoto, (err) => {
+      if (err) {
+        console.error(err)
+        return
+      }
+    });
+    user.photo = '/images/' + sampleFile.name;
+    user.save().then().catch(err => console.log(err));
+    sampleFile.mv(uploadPath, function(err) {
+      if (err)
+        return res.status(500).send(err);
+        
+        
+        return res.status(200).redirect('/dashboard');
+    });
+  }).catch(err => console.log(err));  
+});
 
 module.exports = router;

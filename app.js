@@ -5,6 +5,7 @@ const passport = require('passport');
 const flash = require('connect-flash');
 const session = require('express-session');
 const Connection = require('./models/Connection');
+const fileUpload = require('express-fileupload');
 
 const app = express();
 
@@ -55,6 +56,12 @@ app.use(
     saveUninitialized: true
   })
 );
+
+// Express static
+app.use(express.static('assets'));
+
+// Express file upload
+app.use(fileUpload());
 
 // Passport middleware
 app.use(passport.initialize());

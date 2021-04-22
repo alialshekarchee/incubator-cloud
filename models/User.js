@@ -23,6 +23,11 @@ const UserSchema = new mongoose.Schema({
     required: false,
     default: 'peasant'
   },
+  photo: {
+    type: String,
+    required: true,
+    default: '/images/default_profile.png'
+  },
   date: {
     type: Date,
     default: Date.now
