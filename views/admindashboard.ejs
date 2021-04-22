@@ -1,64 +1,23 @@
 <div class="row">
     <div class="col-lg-1">
-        <img class="img-fluid my-2" width="100px" src="<%= user.photo %>" alt="profile-photo" data-toggle="modal" data-target="#uploadModal">
-
-
+        <img class="img-fluid my-2" width="100px" src="<%= user.photo %>" alt="profile-photo" data-toggle="modal"
+            data-target="#uploadModal">
         <h6>
             <%= user.name %>
         </h6>
+        <hr>
         <div class="wrapper">
             <!-- Sidebar -->
             <nav id="sidebar">
-                <div class="sidebar-header">
-                    <h3>Bootstrap Sidebar</h3>
-                </div>
-
                 <ul class="list-unstyled components">
-                    <p>Dummy Heading</p>
-                    <li class="active">
-                        <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false"
-                            class="dropdown-toggle">Home</a>
-                        <ul class="collapse list-unstyled" id="homeSubmenu">
-                            <li>
-                                <a href="#">Home 1</a>
-                            </li>
-                            <li>
-                                <a href="#">Home 2</a>
-                            </li>
-                            <li>
-                                <a href="#">Home 3</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="#">About</a>
-                    </li>
-                    <li>
-                        <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false"
-                            class="dropdown-toggle">Pages</a>
-                        <ul class="collapse list-unstyled" id="pageSubmenu">
-                            <li>
-                                <a href="#">Page 1</a>
-                            </li>
-                            <li>
-                                <a href="#">Page 2</a>
-                            </li>
-                            <li>
-                                <a href="#">Page 3</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="#">Portfolio</a>
-                    </li>
-                    <li>
-                        <a href="#">Contact</a>
-                    </li>
+                    <li><a href="#" class="mb-1">Stats</a></li>
+                    <li><a href="#" class="mb-1">Accounts</a></li>
+                    <li><a href="#" class="mb-1">Devices</a></li>
+                    <li><a href="#" class="mb-1">Settings</a></li>
+                    <li><a href="/users/logout" class="mb-1">Logout</a></li>
                 </ul>
             </nav>
-
         </div>
-
     </div>
     <div class="col-lg">
         <h1 class="mt-4">Dashboard</h1>
@@ -66,7 +25,7 @@
         </p>
         <a href="/ws" class="btn btn-secondary">viewer</a>
         <a href="/wss" class="btn btn-secondary">esp</a>
-        <a href="/users/logout" class="btn btn-secondary">Logout</a>
+        
         <h2 style="margin: 10px 0px 0px 0px;">This is users table</h2>
 
         <% if (msg.msg_type==='success' ) { %>
@@ -285,8 +244,10 @@
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <form id="uploadForm" action='/users/upload' method='POST' encType="multipart/form-data">
-                                            <input type="hidden" name="email" id="uploadEmail" value="<%= user.email %>">
+                                        <form id="uploadForm" action='/users/upload' method='POST'
+                                            encType="multipart/form-data">
+                                            <input type="hidden" name="email" id="uploadEmail"
+                                                value="<%= user.email %>">
                                             <div class="form-group">
                                                 <label for="select">Select profile photo</label>
                                                 <input type="file" class="btn btn-primary" name="sampleFile" />
@@ -296,8 +257,9 @@
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary"
-                                            data-dismiss="modal">Cancle</button>        
-                                            <button type="button" class="btn btn-primary" onclick="uploadPhoto()">Upload photo</button>                     
+                                            data-dismiss="modal">Cancle</button>
+                                        <button type="button" class="btn btn-primary" onclick="uploadPhoto()">Upload
+                                            photo</button>
                                     </div>
                                 </div>
                             </div>
@@ -324,7 +286,7 @@
 <script>
 
     function uploadPhoto() {
-       document.getElementById('uploadForm').submit(); 
+        document.getElementById('uploadForm').submit();
     }
 
     function addUser() {
