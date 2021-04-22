@@ -1,5 +1,17 @@
-<div class="row">
+<div class="row header">
+    <div class="col-lg-11"></div>
     <div class="col-lg-1">
+        <div class="img-container">
+            <div class="img-mask">
+                <img width="30px" src="<%= user.photo %>" alt="profile-photo">
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row">
+    <div class="col-lg-1" style="background-color: rgb(247, 247, 247);">
         <img class="img-fluid my-2" width="100px" src="<%= user.photo %>" alt="profile-photo" data-toggle="modal"
             data-target="#uploadModal">
         <h6>
@@ -11,7 +23,7 @@
             <nav id="sidebar">
                 <ul class="list-unstyled components">
                     <li><a href="#" class="mb-1">Stats</a></li>
-                    <li><a href="#" class="mb-1">Accounts</a></li>
+                    <li><a href="#" class="mb-1" onclick="toggleUserTable()">Accounts</a></li>
                     <li><a href="#" class="mb-1">Devices</a></li>
                     <li><a href="#" class="mb-1">Settings</a></li>
                     <li><a href="/users/logout" class="mb-1">Logout</a></li>
@@ -19,14 +31,12 @@
             </nav>
         </div>
     </div>
-    <div class="col-lg">
+    <div class="col-lg-11">
         <h1 class="mt-4">Dashboard</h1>
         <p class="lead mb-3">Welcome Admin <%= user.name %>
         </p>
         <a href="/ws" class="btn btn-secondary">viewer</a>
         <a href="/wss" class="btn btn-secondary">esp</a>
-        
-        <h2 style="margin: 10px 0px 0px 0px;">This is users table</h2>
 
         <% if (msg.msg_type==='success' ) { %>
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -47,7 +57,7 @@
                     <% } %>
 
 
-                        <table class="table" style="margin: 5px 0px 0px 0px;">
+                        <table class="table" style="margin: 5px 0px 0px 0px; display: none;" id="usertable">
                             <thead>
                                 <th scope="col">#</th>
                                 <th scope="col">Name</th>
@@ -109,7 +119,7 @@
                                                     <% } %>
                             </tbody>
                         </table>
-                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addUserModal">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addUserModal" id="addNewAccountBtn" style="display: none">
                             <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor"
                                 class="bi bi-person-plus" viewBox="0 2 16 16">
                                 <path
@@ -284,6 +294,17 @@
 
 
 <script>
+    function toggleUserTable() {
+        var userTable = document.getElementById('usertable'),
+        addNewAccountBtn = document.getElementById('addNewAccountBtn');
+        if (userTable.style.display === 'block') {
+            userTable.style.display = 'none';
+            addNewAccountBtn.style.display = 'none';
+        } else {
+            userTable.style.display = 'block';
+            addNewAccountBtn.style.display = 'block';
+        }
+    }
 
     function uploadPhoto() {
         document.getElementById('uploadForm').submit();

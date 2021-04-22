@@ -44,7 +44,7 @@ router.post('/user', ensureAuthenticatedByJWT, ensureAdminByJWT, (req, res) => {
           if (err) throw err;
           user.password = hash;
           user.save().then(() => {
-            res.status(200).send({ msg_type: 'error', msg_details: `User ${email} created` });
+            res.status(200).send({ msg_type: 'success', msg_details: `User ${email} created` });
           }).catch(err => console.log(err));
         });
       });

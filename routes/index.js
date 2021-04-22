@@ -7,7 +7,7 @@ const { ensureAuthenticated, forwardAuthenticated, ensureAdmin } = require('../c
 const { JsonWebTokenError } = require('jsonwebtoken');
 
 // Welcome Page
-router.get('/', forwardAuthenticated, (req, res) => res.render('welcome'));
+router.get('/', forwardAuthenticated, (req, res) => res.render('home'));
 
 // User Dashboard
 router.get('/dashboard', ensureAuthenticated, (req, res) => {
