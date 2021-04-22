@@ -1,5 +1,5 @@
 body {
-  background-color: #EEF5F9;
+  background-color: #eef5f94d;
 }
 
 .header {
@@ -24,3 +24,25 @@ body {
   border-radius: 50%;
   background-color: transparent;
 } */
+
+/* .cover {
+  background: url('/images/background.jpg') no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  height: 800px;
+  
+} */
+
+html { 
+  background: url(/images/background.jpg) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+.card {
+  background-color: #ffffff46;
+}
