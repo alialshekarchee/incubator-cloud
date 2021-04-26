@@ -25,7 +25,7 @@ body {
   background-color: transparent;
 } */
 
-/* .cover {
+.cover {
   background: url('/images/background.jpg') no-repeat center center fixed; 
   -webkit-background-size: cover;
   -moz-background-size: cover;
@@ -33,15 +33,15 @@ body {
   background-size: cover;
   height: 800px;
   
-} */
+}
 
-html { 
+/* html { 
   background: url(/images/background.jpg) no-repeat center center fixed; 
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
-}
+} */
 
 .card {
   background-color: #ffffff46;

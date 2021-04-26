@@ -55,8 +55,6 @@ router.post('/user', ensureAuthenticatedByJWT, ensureAdminByJWT, (req, res) => {
 });
 // Update user
 router.put('/user', ensureAuthenticatedByJWT, ensureAdminByJWT, (req, res) => {
-  // console.log(req.body)
-  // console.log(req.query)
   User.findOne({ email: req.query.email }).then(user => {
     if (!user) {
       res.status(404).send({ msg_type: 'error', msg_details: 'User not found' });
@@ -97,80 +95,210 @@ router.delete('/user', ensureAuthenticatedByJWT, ensureAdminByJWT, (req, res) =>
   }).catch(err => console.log(err));
 });
 
-// Devices API
+// Devices Admin API
 
-// Fetch all devices
+// Fetch all devices or all devices for a specific user only
 router.get('/devices', ensureAuthenticatedByJWT, ensureAdminByJWT, (req, res) => {
-  User.findOne({ email: req.query.email }).then(user => {
-    Device.find({ token: user.token }).then(devices => {
+  if (req.query.email) {
+    User.findOne({ email: req.query.email }).then(user => {
+      if (!user) {
+        res.status(404).send({ msg: 'User not found' });
+      } else {
+        Device.find({ token: user.token }).then(devices => {
+          if (!devices.length > 0) {
+            res.status(404).send({ msg: 'User has no registered devices' });
+          } else {
+            res.status(200).send({ devices: devices });
+          }
+        }).catch(err => console.log(err));
+      }
+    }).catch(err => console.log(err));
+  } else {
+    Device.find().then(devices => {
       if (!devices.length > 0) {
-        res.status(404).send({ msg: 'User has no registered devices' });
+        res.status(404).send({ msg: 'No registered devices' });
       } else {
         res.status(200).send({ devices: devices });
       }
     }).catch(err => console.log(err));
-  }).catch(err => console.log(err));
-
+  }
 });
 
-// // Fetch single device
-// router.get();
+// Fetch single device
+router.get('/device', ensureAuthenticatedByJWT, ensureAdminByJWT, (req, res) => {
+  if (!req.query.uuid) {
+    res.status(400).send({ msg: 'Bad request' });
+  } else {
+    Device.findOne({ uuid: req.query.uuid }).then(device => {
+      if (!device) {
+        res.status(404).send({ msg: 'Device not found' });
+      } else {
+        res.status(200).send({ device: device });
+      }
+    }).catch(err => console.log(err));
+  }
+});
 
-// // Create new device
-// router.post();
+// Create new device
+router.post('/device', ensureAuthenticatedByJWT, ensureAdminByJWT, (req, res) => {
+  const { name, uuid } = req.body;
+  Device.findOne({ uuid: uuid }).then(device => {
+    if (!device) {
+      const device = new Device({ name: name, uuid: uuid });
+      device.save().then(() => {
+        res.status(200).send({ msg: 'Device registered' });
+      }).catch(err => console.log(err));
+    } else {
+      res.status(409).send({ msg: 'Device already registered' });
+    }
+  }).catch(err => console.log(err));
+});
 
-// // Update device
-// router.put();
+// Update device
+router.put('/device', ensureAuthenticatedByJWT, ensureAdminByJWT, (req, res) => {
+  if (!req.query.uuid) {
+    res.status(400).send({ msg: 'Bad request' });
+  }
+  Device.findOne({ uuid: req.query.uuid }).then(device => {
+    if (!device) {
+      res.status(404).send({ msg: 'Device not registered' });
+    } else {
+      if (!req.body.email || !req.body.name) {
+        res.status(400).send({ msg: 'Bad request' });
+      } else {
+        const { name, email } = req.body;
+        if (email === 'Deactivated') {
+          device.token = email;
+          device.name = name;
+          device.email = email;
+          device.save().then(() => {
+            res.status(200).send({ msg: 'Device updated' });
+          }).catch(err => console.log(err));
+        } else {
+          User.findOne({ email: email }).then(user => {
+            if (!user) {
+              res.status(404).send({ msg: 'Account invalid' });
+            } else {
+              device.token = user.token;
+              device.name = name;
+              device.email = email;
+              device.save().then(() => {
+                res.status(200).send({ msg: 'Device updated' });
+              }).catch(err => console.log(err));
+            }
+          }).catch(err => console.log(err));
+        }
+      }
+    }
+  }).catch(err => console.log(err));
+});
 
-// // Delete device
-// router.delete();
+// Delete device
+router.delete('/device', ensureAuthenticatedByJWT, ensureAdminByJWT, (req, res) => {
+  if (!req.query.uuid) {
+    res.status(400).send({ msg: 'Bad request' });
+  } else {
+    Device.findOne({ uuid: req.query.uuid }).then(device => {
+      if (!device) {
+        res.status(404).send({ msg: 'Device not registered' });
+      } else {
+        Device.deleteOne(device).then(() => {
+          res.status(200).send({ msg: 'Device deleted' });
+        }).catch(err => console.log(err));
+      }
+    }).catch(err => console.log(err));
+  }
+});
 
 
+// Devices User API
+
+// Fetch all devices
+router.get('/user/devices', ensureAuthenticatedByJWT, (req, res) => {
+  Device.find({ token: req.headers['x-access-token'] }).then(devices => {
+    if (!devices.length > 0) {
+      res.status(404).send({ msg: 'No devices registered' });
+    } else {
+      res.status(200).send({ devices: devices });
+    }
+  }).catch(err => console.log(err));
+});
+
+// Fetch single device
+router.get('/user/device', ensureAuthenticatedByJWT, (req, res) => {
+  if (!req.query.uuid) {
+    res.status(400).send({ msg: 'Bad request' });
+  } else {
+    Device.find({ token: req.headers['x-access-token'] }).then(devices => {
+      var flag = false;
+      devices.forEach(device => {
+        if (device.uuid === req.query.uuid) {
+          flag = true;
+          res.status(200).send({ device: device });
+        }
+      });
+      if (!flag) {
+        res.status(400).send({ msg: 'Bad request' });
+      }
+    }).catch(err => console.log(err));
+  }
+});
+
+// Activate/Deactivate device
+router.put('/user/device', ensureAuthenticatedByJWT, (req, res) => {
+  User.findOne({ token: req.headers['x-access-token'] }).then(user => {
+    if (!req.query.uuid) {
+      res.status(400).send({ msg: 'Bad request' });
+    } else {
+      Device.findOne({ uuid: req.query.uuid }).then(device => {
+        if (!device) {
+          res.status(400).send({ msg: 'Bad request' });
+        }
+        if (device.token !== 'unregistered' && device.token !== user.token) {
+          res.status(400).send({ msg: 'Bad request' });
+        } else if (device.token === user.token) {
+          if (req.body.name) {
+            device.name = req.body.name;
+            device.save().then(() => {
+              res.status(200).send({ msg: 'Device renamed' });
+            }).catch(err => console.log(err));
+          }
+        } else {
+          device.email = user.email;
+          device.token = user.token;
+          if (req.body.name) {
+            device.name = req.body.name;
+          }
+          device.save().then(() => {
+            res.status(200).send({ msg: 'Device registered' });
+          }).catch(err => console.log(err));
+        }
+      }).catch(err => console.log(err));
+    }
+  }).catch(err => console.log(err));
+});
 
 
-
-// // Welcome Page
-// router.get('/', forwardAuthenticated, (req, res) => res.render('welcome'));
-
-// // User Dashboard
-// router.get('/dashboard', ensureAuthenticated, (req, res) => {
-//   const token = jwt.sign(req.user.email, 'top-secret');
-//   res.render('dashboard', { user: req.user });
-//   User.findOne({ email: req.user.email }).then(user => {
-//     user.token = token;
-//     user.save().then().catch(err => console.log(err));
-//   }).catch(err => console.log(err));
-// });
-
-// // Admin Dashboard
-// router.get('/admindashboard', ensureAuthenticated, ensureAdmin, (req, res) => {
-//   const token = jwt.sign(req.user.email, 'top-secret');
-//   User.find().then(users => {
-//     res.render('admindashboard', { user: req.user, users: users });
-//   }).catch(err => console.log(err));
-
-//   User.findOne({ email: req.user.email }).then(user => {
-//     user.token = token;
-//     user.save().then().catch(err => console.log(err));
-//   }).catch(err => console.log(err));
-// });
-
-// // Websocket
-// router.get('/ws', ensureAuthenticated, (req, res) => {
-//   User.findOne({ email: req.user.email }).then(user => {
-//     res.render('ws', {
-//       token: user.token
-//     });
-//   }).catch(err => console.log(err));
-// });
-
-// router.get('/wss', ensureAuthenticated, (req, res) => {
-//   User.findOne({ email: req.user.email }).then(user => {
-//     res.render('wss', {
-//       token: user.token
-//     });
-//   }).catch(err => console.log(err));
-// });
-
+// Delete a device
+router.delete('/user/device', ensureAuthenticatedByJWT, (req, res) => {
+  if (!req.query.uuid) {
+    res.status(400).send({ msg: 'Bad request' });
+  }
+  Device.findOne({ uuid: req.query.uuid }).then(device => {
+    if (!device) {
+      res.status(400).send({ msg: 'Bad request' });
+    }
+    if (device.token === req.headers['x-access-token']) {
+      device.email = 'unregistered';
+      device.token = 'unregistered';
+      device.name = 'New Device';
+      device.save().then(() => {
+        res.status(200).send({ msg: 'Device removed' });
+      }).catch(err => console.log(err));
+    } else {
+      res.status(403).send({ msg: 'Access denied' });
+    }
+  }).catch(err => console.log(err));
+});
 
 module.exports = router;
