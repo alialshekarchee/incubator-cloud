@@ -5,6 +5,7 @@ const router = express.Router();
 const User = require('../models/User');
 const { ensureAuthenticated, forwardAuthenticated, ensureAdmin } = require('../config/auth');
 const { JsonWebTokenError } = require('jsonwebtoken');
+const Device = require('../models/Device');
 
 // Welcome Page
 router.get('/', forwardAuthenticated, (req, res) => res.render('home'));
@@ -23,7 +24,9 @@ router.get('/dashboard', ensureAuthenticated, (req, res) => {
 
       } else {
         User.find().then(users => {
-          res.render('admindashboard', { user: user, users: users, msg: { msg_type: '', msg_details: '' } });
+          Device.find().then(devices => {
+            res.render('admindashboard', { user: user, users: users, devices: devices, msg: { msg_type: '', msg_details: '' }, tab: '' });
+          }).catch(err => console.log(err));
         }).catch(err => console.log(err));
 
       }
@@ -35,9 +38,16 @@ router.get('/dashboard', ensureAuthenticated, (req, res) => {
 
 // Admin Dashboard
 router.get('/admindashboard', ensureAuthenticated, ensureAdmin, (req, res) => {
+  var tab = '';
+  if (req.query.tab) {
+    tab = req.query.tab;
+  }
   const token = jwt.sign(req.user.email, 'top-secret');
+  var msg = { msg_type: '', msg_details: '' };
   User.find().then(users => {
-    res.render('admindashboard', { user: req.user, users: users });
+    Device.find().then(devices => {
+      res.render('admindashboard', { user: req.user, users: users, devices: devices, msg: msg, tab: tab });
+    }).catch(err => console.log(err));
   }).catch(err => console.log(err));
 
   User.findOne({ email: req.user.email }).then(user => {
@@ -47,13 +57,19 @@ router.get('/admindashboard', ensureAuthenticated, ensureAdmin, (req, res) => {
 });
 
 router.post('/admindashboard', ensureAuthenticated, ensureAdmin, (req, res) => {
+  var tab = '';
+  if (req.query.tab) {
+    tab = req.query.tab;
+  }
   var msg = { msg_type: '', msg_details: '' };
   if (typeof req.body.msg !== 'undefined' && req.body.msg) {
     msg.msg_type = JSON.parse(req.body.msg).msg_type;
     msg.msg_details = JSON.parse(req.body.msg).msg_details;
   }
   User.find().then(users => {
-    res.render('admindashboard', { user: req.user, users: users, msg: msg });
+    Device.find().then(devices => {
+      res.render('admindashboard', { user: req.user, users: users, devices: devices, msg: msg, tab: tab });
+    }).catch(err => console.log(err));
   }).catch(err => console.log(err));
 });
 

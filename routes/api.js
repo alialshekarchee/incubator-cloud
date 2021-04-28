@@ -69,7 +69,7 @@ router.put('/user', ensureAuthenticatedByJWT, ensureAdminByJWT, (req, res) => {
             if (err) throw err;
             user.password = hash;
             user.save().then(() => {
-              res.status(200).send({ msg_type: 'success', msg_details: `User ${user.email} updated` });
+              res.status(200).send({ msg_type: 'success', msg_details: `User ${user.email} updated`, tab: 'accounts' });
             }).catch(err => console.log(err));
           });
         });
@@ -141,49 +141,65 @@ router.get('/device', ensureAuthenticatedByJWT, ensureAdminByJWT, (req, res) => 
 
 // Create new device
 router.post('/device', ensureAuthenticatedByJWT, ensureAdminByJWT, (req, res) => {
-  const { name, uuid } = req.body;
-  Device.findOne({ uuid: uuid }).then(device => {
-    if (!device) {
-      const device = new Device({ name: name, uuid: uuid });
-      device.save().then(() => {
-        res.status(200).send({ msg: 'Device registered' });
-      }).catch(err => console.log(err));
-    } else {
-      res.status(409).send({ msg: 'Device already registered' });
-    }
-  }).catch(err => console.log(err));
+  if (!req.body.name) {
+    req.body.name = 'New Device';
+  }
+  if (!req.body.uuid) {
+    res.status(200).send({ msg_type: 'error', msg_details: 'Fill the device UUID field' });
+  } else {
+    const { name, uuid } = req.body;
+    Device.findOne({ uuid: uuid }).then(device => {
+      if (!device) {
+        const device = new Device({ name: name, uuid: uuid });
+        device.save().then(() => {
+          res.status(200).send({ msg_type: 'success', msg_details: `Device ${uuid} added` });
+        }).catch(err => console.log(err));
+      } else {
+        res.status(200).send({ msg_type: 'error', msg_details: 'Device already added' });
+      }
+    }).catch(err => console.log(err));
+  }
+
 });
 
 // Update device
 router.put('/device', ensureAuthenticatedByJWT, ensureAdminByJWT, (req, res) => {
   if (!req.query.uuid) {
-    res.status(400).send({ msg: 'Bad request' });
+    res.status(200).send({ msg_type: 'error', msg_details: `Bad request` });
   }
   Device.findOne({ uuid: req.query.uuid }).then(device => {
     if (!device) {
-      res.status(404).send({ msg: 'Device not registered' });
+      res.status(200).send({ msg_type: 'error', msg_details: `Device not registered` });
     } else {
-      if (!req.body.email || !req.body.name) {
-        res.status(400).send({ msg: 'Bad request' });
-      } else {
-        const { name, email } = req.body;
-        if (email === 'Deactivated') {
+      if (!req.body.email && !req.body.name) {
+        return res.status(200).send({ msg_type: 'error', msg_details: `Bad request` });
+      }
+      if (req.body.email && req.body.name) {
+        return res.status(200).send({ msg_type: 'error', msg_details: `Bad request` });
+      }
+      if (!req.body.email) {
+        device.name = req.body.name;
+        device.save().then(() => {
+          return res.status(200).send({ msg_type: 'success', msg_details: `Device renamed` });
+        }).catch(err => console.log(err));
+      }
+      if (!req.body.name) {
+        const email = req.body.email;
+        if (email === 'Deactivated' || email === 'Unregistered') {
           device.token = email;
-          device.name = name;
           device.email = email;
           device.save().then(() => {
-            res.status(200).send({ msg: 'Device updated' });
+            return res.status(200).send({ msg_type: 'success', msg_details: `Device ${email}` });
           }).catch(err => console.log(err));
         } else {
           User.findOne({ email: email }).then(user => {
             if (!user) {
-              res.status(404).send({ msg: 'Account invalid' });
+              return res.status(200).send({ msg_type: 'error', msg_details: `Account invalid` });
             } else {
               device.token = user.token;
-              device.name = name;
               device.email = email;
               device.save().then(() => {
-                res.status(200).send({ msg: 'Device updated' });
+                return res.status(200).send({ msg_type: 'success', msg_details: `Device registered to account ${user.email}` });
               }).catch(err => console.log(err));
             }
           }).catch(err => console.log(err));
@@ -196,14 +212,14 @@ router.put('/device', ensureAuthenticatedByJWT, ensureAdminByJWT, (req, res) => 
 // Delete device
 router.delete('/device', ensureAuthenticatedByJWT, ensureAdminByJWT, (req, res) => {
   if (!req.query.uuid) {
-    res.status(400).send({ msg: 'Bad request' });
+    res.status(400).send({ msg_type: 'error', msg_details: 'No UUID provided' });
   } else {
     Device.findOne({ uuid: req.query.uuid }).then(device => {
       if (!device) {
-        res.status(404).send({ msg: 'Device not registered' });
+        res.status(404).send({ msg_type: 'error', msg_details: 'Device not found' });
       } else {
         Device.deleteOne(device).then(() => {
-          res.status(200).send({ msg: 'Device deleted' });
+          res.status(200).send({ msg_type: 'success', msg_details: 'Device deleted' });
         }).catch(err => console.log(err));
       }
     }).catch(err => console.log(err));
@@ -254,7 +270,7 @@ router.put('/user/device', ensureAuthenticatedByJWT, (req, res) => {
         if (!device) {
           res.status(400).send({ msg: 'Bad request' });
         }
-        if (device.token !== 'unregistered' && device.token !== user.token) {
+        if (device.token !== 'Unregistered' && device.token !== user.token) {
           res.status(400).send({ msg: 'Bad request' });
         } else if (device.token === user.token) {
           if (req.body.name) {
@@ -262,6 +278,18 @@ router.put('/user/device', ensureAuthenticatedByJWT, (req, res) => {
             device.save().then(() => {
               res.status(200).send({ msg: 'Device renamed' });
             }).catch(err => console.log(err));
+          } else if (req.body.email && (req.body.email === user.email || req.body.email === 'Unregistered')) {
+            device.email = req.body.email;
+            if (req.body.email === 'Unregistered') {
+              device.token = req.body.email;
+            } else {
+              device.token = user.token;
+            }
+            device.save().then(() => {
+              res.status(200).send({ msg: 'Device updated' });
+            }).catch(err => console.log(err));
+          } else {
+            res.status(400).send({ msg: 'Bad request' });
           }
         } else {
           device.email = user.email;

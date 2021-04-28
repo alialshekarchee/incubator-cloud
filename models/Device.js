@@ -4,7 +4,8 @@ const bcrypt = require('bcrypt');
 const UserSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true
+        required: true,
+        default: 'New Device'
     },
     connection: {
         type: String,

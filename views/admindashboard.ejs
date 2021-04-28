@@ -1,17 +1,17 @@
-<div class="row header">
+<!-- <div class="row header">
     <div class="col-lg-11"></div>
     <div class="col-lg-1">
         <div class="img-container">
             <div class="img-mask">
-                <img width="30px" src="<%= user.photo %>" alt="profile-photo">
+                <img width="30px" src=" user.photo %>" alt="profile-photo">
             </div>
         </div>
     </div>
 
-</div>
+</div> -->
 
 <div class="row">
-    <div class="col-lg-1" style="background-color: rgb(247, 247, 247);">
+    <div class="col-lg-2 col-md-3" style="background-color: rgb(247, 247, 247);">
         <img class="img-fluid my-2" width="100px" src="<%= user.photo %>" alt="profile-photo" data-toggle="modal"
             data-target="#uploadModal">
         <h6>
@@ -21,22 +21,26 @@
         <div class="wrapper">
             <!-- Sidebar -->
             <nav id="sidebar">
-                <ul class="list-unstyled components">
-                    <li><a href="#" class="mb-1">Stats</a></li>
-                    <li><a href="#" class="mb-1" onclick="toggleUserTable()">Accounts</a></li>
-                    <li><a href="#" class="mb-1">Devices</a></li>
-                    <li><a href="#" class="mb-1">Settings</a></li>
-                    <li><a href="/users/logout" class="mb-1">Logout</a></li>
-                </ul>
+                <div class="list-group">
+                    <a href="/admindashboard" class="list-group-item" role="button" id="stats-btn">Stats</a>
+                    <a href="/admindashboard?tab=accounts" class="list-group-item" role="button"
+                        id="accounts-btn">Accounts</a>
+                    <a href="/admindashboard?tab=devices" class="list-group-item" role="button"
+                        id="devices-btn">Devices</a>
+                    <a href="/admindashboard?tab=settings" class="list-group-item" role="button"
+                        id="settings-btn">Settings</a>
+                    <a href="/users/logout" class="list-group-item" role="button">Logout</a>
+                </div>
             </nav>
         </div>
     </div>
-    <div class="col-lg-11">
+    <div class="col-lg-10 col-md-9">
         <h1 class="mt-4">Dashboard</h1>
         <p class="lead mb-3">Welcome Admin <%= user.name %>
         </p>
         <a href="/ws" class="btn btn-secondary">viewer</a>
         <a href="/wss" class="btn btn-secondary">esp</a>
+        <hr>
 
         <% if (msg.msg_type==='success' ) { %>
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -47,17 +51,29 @@
             </div>
             <% } %>
 
-        <% if (msg.msg_type==='error' ) { %>
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                <%= msg.msg_details %>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-            </div>
-            <% } %>
+                <% if (msg.msg_type==='error' ) { %>
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <%= msg.msg_details %>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                    </div>
+                    <% } %>
+
+                        <button type="button" class="btn btn-primary mb-3" data-toggle="modal"
+                            data-target="#addUserModal" id="addNewAccountBtn" style="display: none">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor"
+                                class="bi bi-person-plus" viewBox="0 2 16 16">
+                                <path
+                                    d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z" />
+                                <path fill-rule="evenodd"
+                                    d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z" />
+                            </svg><span class="ml-2">Add new account</span>
+                        </button>
 
 
-                        <table class="table" style="margin: 5px 0px 0px 0px; display: none;" id="usertable">
+                        <table class="table table-striped table-hover table-condensed"
+                            style="margin: 5px 0px 0px 0px; display: none;" id="usertable">
                             <thead>
                                 <th scope="col">#</th>
                                 <th scope="col">Name</th>
@@ -90,7 +106,7 @@
                                                         <%= showuser.date %>
                                                     </td>
                                                     <td>
-                                                        <button type="button" class="btn btn-primary"
+                                                        <button type="button" class="btn btn-primary btn-sm mb-1"
                                                             data-toggle="modal" data-target="#editModal"
                                                             onclick="editUser('<%= showuser.name %>','<%= showuser.email %>','<%= showuser.role %>')">
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="16"
@@ -100,8 +116,7 @@
                                                                     d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
                                                             </svg>
                                                         </button>
-
-                                                        <button type="button" class="btn btn-primary"
+                                                        <button type="button" class="btn btn-primary btn-sm"
                                                             data-toggle="modal" data-target="#deleteModal"
                                                             onclick="confirmDelete('<%= showuser.email %>')"><svg
                                                                 xmlns="http://www.w3.org/2000/svg" width="16"
@@ -119,16 +134,7 @@
                                                     <% } %>
                             </tbody>
                         </table>
-                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addUserModal" id="addNewAccountBtn" style="display: none">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor"
-                                class="bi bi-person-plus" viewBox="0 2 16 16">
-                                <path
-                                    d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z" />
-                                <path fill-rule="evenodd"
-                                    d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z" />
-                            </svg>
-                            Add new account
-                        </button>
+
 
                         <!-- Add User Modal -->
                         <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog"
@@ -159,7 +165,11 @@
                                             </div>
                                             <div class="form-group">
                                                 <label for="name">Role</label>
-                                                <input class="form-control" type="text" name="role" id="newuserrole">
+                                                <select class="form-control" name="role" id="newuserrole">
+                                                    <option value="god">God</option>
+                                                    <option value="master">Master</option>
+                                                    <option value="peasant">Peasant</option>
+                                                </select>
                                             </div>
                                         </form>
                                     </div>
@@ -173,7 +183,7 @@
                             </div>
                         </div>
 
-                        <!-- Edit Modal -->
+                        <!-- Edit User Modal -->
                         <div class="modal fade" id="editModal" tabindex="-1" role="dialog"
                             aria-labelledby="exampleModalLabel" aria-hidden="true">
                             <div class="modal-dialog" role="document">
@@ -198,7 +208,11 @@
                                             </div>
                                             <div class="form-group">
                                                 <label for="name">Role</label>
-                                                <input class="form-control" type="text" name="role" id="role">
+                                                <select class="form-control" name="role" id="role">
+                                                    <option value="god">God</option>
+                                                    <option value="master">Master</option>
+                                                    <option value="peasant">Peasant</option>
+                                                </select>
                                             </div>
                                         </form>
                                     </div>
@@ -212,7 +226,7 @@
                             </div>
                         </div>
 
-                        <!-- Delete Modal -->
+                        <!-- Delete User Modal -->
                         <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog"
                             aria-labelledby="exampleModalLabel" aria-hidden="true">
                             <div class="modal-dialog" role="document">
@@ -275,46 +289,281 @@
                             </div>
                         </div>
 
-                        <form action="/admindashboard" method="POST" id="addform">
-                            <input type="hidden" name="user" value="<%= user %> ">
-                            <input type="hidden" name="msg" id="msg__">
+                        <button type="button" class="btn btn-primary mb-3" data-toggle="modal"
+                            data-target="#addDeviceModal" id="addNewDeviceBtn" style="display: none">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor"
+                                class="bi bi-hdd" viewBox="0 2 16 16">
+                                <path
+                                    d="M4.5 11a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zM3 10.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z" />
+                                <path
+                                    d="M16 11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V9.51c0-.418.105-.83.305-1.197l2.472-4.531A1.5 1.5 0 0 1 4.094 3h7.812a1.5 1.5 0 0 1 1.317.782l2.472 4.53c.2.368.305.78.305 1.198V11zM3.655 4.26 1.592 8.043C1.724 8.014 1.86 8 2 8h12c.14 0 .276.014.408.042L12.345 4.26a.5.5 0 0 0-.439-.26H4.094a.5.5 0 0 0-.44.26zM1 10v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1z" />
+                            </svg><span class="ml-2">Add new Device</span>
+                        </button>
+
+                        <table class="table table-striped table-hover table-condensed"
+                            style="margin: 5px 0px 0px 0px; display: none;" id="devicetable">
+                            <thead>
+                                <th scope="col">#</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">UUID</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Created on</th>
+                                <th scope="col">Actions</th>
+                            </thead>
+                            <tbody>
+                                <% if(devices){ %>
+                                    <% var i=0; %>
+                                        <% devices.forEach(showdevice=> { %>
+                                            <% i++; %>
+                                                <tr>
+                                                    <th scope="row">
+                                                        <%= i %>
+                                                    </th>
+                                                    <td>
+                                                        <%= showdevice.name %>
+                                                    </td>
+                                                    <td>
+                                                        <%= showdevice.uuid %>
+                                                    </td>
+                                                    <td>
+                                                        <%= showdevice.email %>
+                                                    </td>
+                                                    <td>
+                                                        <%= showdevice.date %>
+                                                    </td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-primary btn-sm"
+                                                            data-toggle="modal" data-target="#renameDeviceModal"
+                                                            onclick='confirmDeviceRename("<%= showdevice.name %>", "<%= showdevice.uuid %>")'>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                height="16" fill="currentColor" class="bi bi-pencil"
+                                                                viewBox="0 0 16 16">
+                                                                <path
+                                                                    d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
+                                                            </svg>
+                                                        </button>
+                                                        <button type="button" class="btn btn-primary btn-sm"
+                                                            data-toggle="modal" data-target="#linkUnlinkDeviceModal"
+                                                            onclick="confirmLinkUnlink('<%= showdevice.email %>', '<%= showdevice.uuid %>')">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                height="16" fill="currentColor" class="bi bi-link"
+                                                                viewBox="1 3 14 14">
+                                                                <path
+                                                                    d="M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-4H9c-.086 0-.17.01-.25.031A2 2 0 0 1 7 10.5H4a2 2 0 1 1 0-4h1.535c.218-.376.495-.714.82-1z" />
+                                                                <path
+                                                                    d="M9 5.5a3 3 0 0 0-2.83 4h1.098A2 2 0 0 1 9 6.5h3a2 2 0 1 1 0 4h-1.535a4.02 4.02 0 0 1-.82 1H12a3 3 0 1 0 0-6H9z" />
+                                                            </svg>
+                                                        </button>
+                                                        <hr>
+                                                        <button type="button" class="btn btn-primary btn-sm"
+                                                            data-toggle="modal" data-target="#lockDeviceModal">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                height="16" fill="currentColor" class="bi bi-lock"
+                                                                viewBox="0 0 16 16">
+                                                                <path
+                                                                    d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zM5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" />
+                                                            </svg>
+                                                        </button>
+                                                        <button type="button" class="btn btn-primary btn-sm"
+                                                            data-toggle="modal" data-target="#deleteDeviceModal"
+                                                            onclick="confirmDeviceDelete('<%= showdevice.uuid %>')"><svg
+                                                                xmlns="http://www.w3.org/2000/svg" width="16"
+                                                                height="16" fill="currentColor" class="bi bi-trash"
+                                                                viewBox="0 0 16 16">
+                                                                <path
+                                                                    d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                                                                <path fill-rule="evenodd"
+                                                                    d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                                                            </svg></button>
+
+                                                    </td>
+                                                </tr>
+                                                <% }); %>
+                                                    <% } %>
+                            </tbody>
+                        </table>
+
+
+
+                        <!-- Add Device Modal -->
+                        <div class="modal fade" id="addDeviceModal" tabindex="-1" role="dialog"
+                            aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Add new device</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+
+                                        <form action="/admindashboard" method="GET" id="adduserform">
+                                            <div class="form-group">
+                                                <label for="name">Name</label>
+                                                <input class="form-control" type="text" name="name" id="newdevicename">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="uuid">UUID</label>
+                                                <input class="form-control" type="text" name="uuid" id="newdeviceuuid">
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-primary" onclick="addDevice()">Add
+                                            device</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rename Device Modal -->
+                        <div class="modal fade" id="renameDeviceModal" tabindex="-1" role="dialog"
+                            aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Rename device</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form action="/admindashboard" method="GET" id="renamedeviceform">
+                                            <input type="hidden" name="uuid" id="renameuuid">
+                                            <div class="form-group">
+                                                <label for="name">Name</label>
+                                                <input class="form-control" type="text" name="name"
+                                                    id="devicerenameinput">
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-primary" onclick="renameDevice()">Save
+                                            changes</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Delete Device Modal -->
+                        <div class="modal fade" id="deleteDeviceModal" tabindex="-1" role="dialog"
+                            aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Delete device</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form>
+                                            <input type="hidden" name="uuid" id="deleteuuid">
+                                            <div class="form-group">
+                                                <label id="deleteuuidlable">Are you sure you to delete this device (
+                                                </label>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Cancle</button>
+                                        <button type="button" class="btn btn-primary" onclick="deleteDevice()">Delete
+                                            device</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Link/Unlink Device Modal -->
+                        <div class="modal fade" id="linkUnlinkDeviceModal" tabindex="-1" role="dialog"
+                            aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Link / Unlink device</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form>
+                                            <input type="hidden" name="uuid" id="linkunlinkuuid">
+                                            <input type="hidden" name="status" id="linkunlinkstatus">
+
+                                            <div class="form-group">
+                                                <label id="linkunlinklable"></label>
+                                                <input type="hidden" name="email" id="linkunlinkemail"
+                                                    class="form-control">
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Cancle</button>
+                                        <button type="button" class="btn btn-primary" onclick="linkUnlinkDevice()"
+                                            id="linkunlinksubmitbtn">Link / Unlink device</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <form action="/admindashboard?tab=accounts" method="POST" id="accountsform">
+                            <input type="hidden" name="user" value="<%= user %>">
+                            <input type="hidden" name="msg" id="accountsmsg">
                         </form>
 
-                        <form action="/admindashboard" method="POST" id="editform">
-                            <input type="hidden" name="user" value="<%= user %> ">
-                            <input type="hidden" name="msg" id="msg_">
+                        <form action="/admindashboard?tab=devices" method="POST" id="devicesform">
+                            <input type="hidden" name="user" value="<%= user %>">
+                            <input type="hidden" name="msg" id="devicesmsg">
                         </form>
 
-                        <form action="/admindashboard" method="POST" id="deleteform">
-                            <input type="hidden" name="user" value="<%= user %> ">
-                            <input type="hidden" name="msg" id="msg">
-                        </form> 
+
     </div>
 </div>
-    
 
-  <script type="text/javascript">
-   function autorun()
-   {
-    
-   }
-   if (document.addEventListener) document.addEventListener("DOMContentLoaded", autorun, false);
-   else if (document.attachEvent) document.attachEvent("onreadystatechange", autorun);
-   else window.onload = autorun;
-  </script>
 
-<script>
-    function toggleUserTable() {
-        var userTable = document.getElementById('usertable'),
-        addNewAccountBtn = document.getElementById('addNewAccountBtn');
-        if (userTable.style.display === 'block') {
-            userTable.style.display = 'none';
-            addNewAccountBtn.style.display = 'none';
-        } else {
+<script type="text/javascript">
+    function autorun() {
+        if ('<%= tab %>' === '') {
+            var statsbtn = document.getElementById('stats-btn');
+            statsbtn.classList.add('active');
+        }
+        if ('<%= tab %>' === 'accounts') {
+            var userTable = document.getElementById('usertable'),
+                addNewAccountBtn = document.getElementById('addNewAccountBtn'),
+                accountsbtn = document.getElementById('accounts-btn');
             userTable.style.display = 'block';
             addNewAccountBtn.style.display = 'block';
+            accountsbtn.classList.add('active');
+        }
+        if ('<%= tab %>' === 'devices') {
+            var deviceTable = document.getElementById('devicetable'),
+                newDeviceBtn = document.getElementById('addNewDeviceBtn'),
+                devicesbtn = document.getElementById('devices-btn');
+            deviceTable.style.display = 'block';
+            newDeviceBtn.style.display = 'block';
+            devicesbtn.classList.add('active');
+        }
+        if ('<%= tab %>' === 'settings') {
+            var settingsbtn = document.getElementById('settings-btn');
+            settingsbtn.classList.add('active');
         }
     }
+    if (document.addEventListener) document.addEventListener("DOMContentLoaded", autorun, false);
+    else if (document.attachEvent) document.attachEvent("onreadystatechange", autorun);
+    else window.onload = autorun;
+</script>
+
+<script>
+
 
     function uploadPhoto() {
         document.getElementById('uploadForm').submit();
@@ -329,9 +578,8 @@
         xhr.open('POST', '/api/user');
         xhr.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
-                console.log(this.responseText)
-                document.getElementById("msg__").value = this.responseText;
-                document.getElementById("addform").submit();
+                document.getElementById("accountsmsg").value = this.responseText;
+                document.getElementById("accountsform").submit();
             }
         };
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -355,9 +603,8 @@
         xhr.open('PUT', '/api/user?email=' + document.getElementById("email").value);
         xhr.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
-                console.log(this.responseText)
-                document.getElementById("msg_").value = this.responseText;
-                document.getElementById("editform").submit();
+                document.getElementById("accountsmsg").value = this.responseText;
+                document.getElementById("accountsform").submit();
             }
         };
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -376,12 +623,125 @@
         xhr.open('DELETE', '/api/user?email=' + email);
         xhr.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
-                document.getElementById("msg").value = this.responseText;
-                document.getElementById("deleteform").submit();
+                document.getElementById("accountsmsg").value = this.responseText;
+                document.getElementById("accountsform").submit();
             }
         };
         xhr.setRequestHeader('x-access-token', '<%= user.token %>');
         xhr.send();
+    }
+
+    function addDevice() {
+        var name = document.getElementById("newdevicename").value,
+            uuid = document.getElementById("newdeviceuuid").value;
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/api/device');
+        xhr.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("devicesmsg").value = this.responseText;
+                document.getElementById("devicesform").submit();
+            }
+        };
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.setRequestHeader('x-access-token', '<%= user.token %>');
+        xhr.send(`name=${name}&uuid=${uuid}`);
+    }
+
+    function confirmDeviceRename(name, uuid) {
+        document.getElementById("devicerenameinput").value = name;
+        document.getElementById('renameuuid').value = uuid;
+    }
+
+    function renameDevice() {
+        var name = document.getElementById('devicerenameinput').value,
+            uuid = document.getElementById('renameuuid').value;
+        var xhr = new XMLHttpRequest();
+        xhr.open('PUT', `/api/device?uuid=${uuid}`);
+        xhr.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("devicesmsg").value = this.responseText;
+                document.getElementById("devicesform").submit();
+            }
+        };
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.setRequestHeader('x-access-token', '<%= user.token %>');
+        xhr.send(`name=${name}`);
+    }
+
+    function confirmDeviceDelete(uuid) {
+        document.getElementById('deleteuuidlable').innerText += uuid + " )?";
+        document.getElementById('deleteuuid').value = uuid;
+    }
+
+    function deleteDevice() {
+        var uuid = document.getElementById('deleteuuid').value;
+        var xhr = new XMLHttpRequest();
+        xhr.open('DELETE', '/api/device?uuid=' + uuid);
+        xhr.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("devicesmsg").value = this.responseText;
+                document.getElementById("devicesform").submit();
+            }
+        };
+        xhr.setRequestHeader('x-access-token', '<%= user.token %>');
+        xhr.send();
+    }
+
+    function confirmLinkUnlink(status, uuid) {
+        var linkunlinkuuid = document.getElementById('linkunlinkuuid'),
+            linkunlinklable = document.getElementById('linkunlinklable'),
+            linkunlinkstatus = document.getElementById('linkunlinkstatus'),
+            linkunlinkemail = document.getElementById('linkunlinkemail'),
+            linkunlinksubmitbtn = document.getElementById('linkunlinksubmitbtn');
+        linkunlinkuuid.value = uuid;
+        if (status === 'Deactivated') {
+            linkunlinklable.innerText = 'Device deactivated, You need to activate it first.';
+            linkunlinksubmitbtn.style.display = 'none';
+            linkunlinkemail.type = 'hidden';
+        } else if (status === 'Unregistered') {
+            linkunlinklable.innerText = 'Type in the account you want to link the device to:';
+            linkunlinksubmitbtn.innerText = 'Link device';
+            linkunlinksubmitbtn.style.display = 'inline-block';
+            linkunlinkstatus.value = status;
+            linkunlinkemail.type = 'email';
+        } else {
+            linkunlinklable.innerText = `Device linked to ${status}, Are you sure you want to unlink it?`;
+            linkunlinksubmitbtn.innerText = 'Unlink device';
+            linkunlinksubmitbtn.style.display = 'inline-block';
+            linkunlinkstatus.value = status;
+            linkunlinkemail.type = 'hidden';
+        }
+    }
+
+    function linkUnlinkDevice() {
+        var linkunlinkuuid = document.getElementById('linkunlinkuuid').value,
+            linkunlinkstatus = document.getElementById('linkunlinkstatus').value;
+        if (linkunlinkstatus === 'Unregistered') {
+            linkunlinkemail = document.getElementById('linkunlinkemail').value;
+            var xhr = new XMLHttpRequest();
+            xhr.open('PUT', '/api/device?uuid=' + linkunlinkuuid);
+            xhr.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    document.getElementById("devicesmsg").value = this.responseText;
+                    document.getElementById("devicesform").submit();
+                }
+            };
+            xhr.setRequestHeader('x-access-token', '<%= user.token %>');
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.send(`email=${linkunlinkemail}`);
+        } else {
+            var xhr = new XMLHttpRequest();
+            xhr.open('PUT', '/api/device?uuid=' + linkunlinkuuid);
+            xhr.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    document.getElementById("devicesmsg").value = this.responseText;
+                    document.getElementById("devicesform").submit();
+                }
+            };
+            xhr.setRequestHeader('x-access-token', '<%= user.token %>');
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.send('email=Unregistered');
+        }
     }
 
 </script>
