@@ -14,6 +14,11 @@ const UserSchema = new mongoose.Schema({
     required: true,
     default: 'viewer'
   },
+  destination: {
+    type: String,
+    required: true,
+    default: '-1'
+  },
   date: {
     type: Date,
     default: Date.now

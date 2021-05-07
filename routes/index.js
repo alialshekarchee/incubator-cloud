@@ -31,7 +31,9 @@ router.get('/dashboard', ensureAuthenticated, (req, res) => {
 
       }
     } else {
-      res.render('dashboard', { user: req.user });
+      Device.find({token: req.user.token}).then(devices => {
+        res.render('dashboard', { user: user, devices: devices, msg: { msg_type: '', msg_details: '' }, tab: '' });
+      }).catch(err => console.log(err));
     }
   }).catch(err => console.log(err));
 });
@@ -77,7 +79,8 @@ router.post('/admindashboard', ensureAuthenticated, ensureAdmin, (req, res) => {
 router.get('/ws', ensureAuthenticated, (req, res) => {
   User.findOne({ email: req.user.email }).then(user => {
     res.render('ws', {
-      token: user.token
+      token: user.token,
+      destination: req.query.d
     });
   }).catch(err => console.log(err));
 });

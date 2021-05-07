@@ -1,6 +1,6 @@
 <form id="form" action="">
   <span>Message (command)</span><input id="msg" autocomplete="off" />
-  <span>destination (uuid)</span><input type="text" id="destination" />
+  <!-- <span>destination (uuid)</span><input type="text" id="destination" /> -->
   <button>Send</button>
 </form>
 <ul id="list"></ul>
@@ -15,17 +15,17 @@
   var list = document.getElementById('list');
 
   var socket = io();
-  socket.on('connect', () => socket.emit('payload', { token: '<%= token %>', client: 'viewer', request: { destination: '', msg: 'register' } }));
+  socket.on('connect', () => socket.emit('payload', { token: '<%= token %>', client: 'viewer', request: { destination: '<%= destination %>', msg: 'register' } }));
 
   socket.on('payload', payload => {
-    // console.log(payload);
+    console.log(payload);
     list.innerHTML += '<li>' + payload + '</li>'
   });
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     if (message.value) {
-      socket.emit('payload', { token: '<%= token %>', client: 'viewer', request: { destination: dest.value, msg: message.value } });
+      socket.emit('payload', { token: '<%= token %>', client: 'viewer', request: { destination: '<%= destination %>', msg: message.value } });
       message.value = '';
     }
   });

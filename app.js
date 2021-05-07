@@ -9,7 +9,7 @@ const fileUpload = require('express-fileupload');
 
 const app = express();
 
-const http = require('http').createServer(app);
+const http = require('http').Server(app);
 const io = require('socket.io')(http);
 // Passport Config
 require('./config/passport')(passport);
@@ -29,15 +29,15 @@ mongoose
     console.log('MongoDB Connected');
     // Flush the connection table on server start
     Connection.find()
-    .then(connections => {
-      connections.forEach(conn => {
-        conn.delete().then().catch((err) => console.log(err));
+      .then(connections => {
+        connections.forEach(conn => {
+          conn.delete().then().catch((err) => console.log(err));
+        });
+      })
+      .catch(err => {
+        console.log(err);
+        socket.emit({ msg: 'server error' });
       });
-    })
-    .catch(err => {
-      console.log(err);
-      socket.emit({ msg: 'server error' });
-    });
   })
   .catch(err => console.log(err));
 
@@ -84,8 +84,10 @@ app.use('/users', require('./routes/users.js'));
 app.use('/api', require('./routes/api.js'));
 
 // Websocket implemintation
-io.on('connection', (socket) => {
+io.on('connection', socket => {
   console.log('a user connected: ' + socket.id);
+  // socket.emit('payload', 'Welcome');
+  // io.to(socket.id).emit('payload', 'Welcome');
   // Load Connection model
   const conn = new Connection();
 
@@ -100,7 +102,8 @@ io.on('connection', (socket) => {
         } else {
           if (payload.request.msg === 'register') {
             if (payload.client !== 'viewer') {
-              Device.findOne({uuid: payload.client})
+              console.log(payload)
+              Device.findOne({ uuid: payload.client })
                 .then(device => {
                   if (!device) {
                     socket.emit({ msg: 'device not registered' });
@@ -119,16 +122,21 @@ io.on('connection', (socket) => {
               conn.connection = socket.id;
               conn.token = payload.token;
               conn.client = payload.client;
+              conn.destination = payload.request.destination;
+              console.log(conn);
               conn.save().then(() => console.log('connection saved!')).catch((err) => console.log(err));
-              console.log('token from ( ' + socket.id + ' ): ' + payload.token);
-            }            
+              // console.log('token from ( ' + socket.id + ' ): ' + payload.token);
+            }
           } else {
             if (payload.client !== 'viewer') {
+              console.log(payload.request.msg);
               Connection.find({ token: payload.token })
                 .then(connections => {
                   console.log(`${connections.length} clients available`);
                   connections.forEach(conn => {
-                    io.to(conn.connection).emit('payload', payload.request.msg);
+                    if (conn.destination === payload.request.destination) {
+                      io.to(conn.connection).emit('payload', payload.request.msg);
+                    }                    
                   });
                 })
                 .catch(err => {
@@ -140,17 +148,17 @@ io.on('connection', (socket) => {
                 .then(devices => {
                   devices.forEach(device => {
                     if (device.uuid === payload.request.destination) {
-                      io.to(device.connection).emit('payload', payload.request.msg);
-                      console.log(payload.request.msg);
+                      io.to(device.connection).emit('set', payload.request.msg);
+                      console.log(payload.request.msg+" to "+payload.request.destination + " on socket: " +device.connection);
                     }
-                  });                  
+                  });
                 })
                 .catch(err => {
                   console.log(err);
                   socket.emit({ msg: 'server error' });
                 });
             }
-          }          
+          }
         }
       })
       .catch(err => {
