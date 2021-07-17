@@ -26,6 +26,10 @@ const UserSchema = new mongoose.Schema({
         required: false,
         default: 'peasant'
     },
+    status: {
+        type: String,
+        required: false,
+    },
     date: {
         type: Date,
         default: Date.now

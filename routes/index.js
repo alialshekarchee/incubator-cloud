@@ -19,7 +19,9 @@ router.get('/dashboard', ensureAuthenticated, (req, res) => {
     if (user.role === 'god') {
       if (typeof req.query.email !== 'undefined' && req.query.email) {
         User.findOne({ email: req.query.email }).then(usr => {
-          res.render('dashboard', { user: usr });
+          Device.find({ email: usr.email }).then(devices => {
+            res.render('dashboard', { user: usr, devices: devices });
+          }).catch(err => console.log(err));          
         }).catch(err => console.log(err));
 
       } else {
