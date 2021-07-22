@@ -21,7 +21,6 @@ module.exports = function (passport) {
           if (isMatch) {
             return done(null, user);
           } else {
-
             User.find().then(users => {
               var accessGranted = false;
               var finishedProcessesCount = 0;
