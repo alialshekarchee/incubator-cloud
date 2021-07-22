@@ -9,7 +9,6 @@ const Device = require('../models/Device');
 
 // Welcome Page
 router.get('/', forwardAuthenticated, (req, res) => res.render('home'));
-
 // User Dashboard
 router.get('/dashboard', ensureAuthenticated, (req, res) => {
   const token = jwt.sign(req.user.email, 'top-secret');
@@ -46,7 +45,7 @@ router.get('/admindashboard', ensureAuthenticated, ensureAdmin, (req, res) => {
   if (req.query.tab) {
     tab = req.query.tab;
   }
-  const token = jwt.sign(req.user.email, 'top-secret');
+  const token = jwt.sign(req.user.email, 'top-secret'); // PASSWORD TO BE CHANGED
   var msg = { msg_type: '', msg_details: '' };
   User.find().then(users => {
     Device.find().then(devices => {
