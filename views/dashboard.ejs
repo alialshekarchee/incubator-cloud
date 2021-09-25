@@ -6,6 +6,6 @@
 <hr>
 <ul>
     <% devices.forEach(device => { %>
-        <a href="/ws?d=<%= device.uuid %> " target="_blank" class="btn btn-secondary">viewer for <%= device.uuid %></a>
+        <a href="/viewer?d=<%= device.uuid %>&option=com_jumi&amp;fileid=3&amp;Itemid=11" onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=450,height=630'); return false;" class="btn btn-secondary">Incubator #<%= device.uuid %></a>
     <% }) %>
 </ul>

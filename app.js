@@ -93,6 +93,7 @@ io.on('connection', socket => {
   const conn = new Connection();
 
   socket.on('payload', payload => {
+    // console.log(payload)
     if (payload.token) {  // check if the connection request is comming from linked device or an authorized viewer
       User.findOne({ token: payload.token })
         .then(user => {
@@ -134,9 +135,11 @@ io.on('connection', socket => {
                   .then(connections => {
                     console.log(`${connections.length} clients available`);
                     connections.forEach(conn => {
+                                        
                       if (conn.destination === payload.client) {
-                        io.to(conn.connection).emit('payload', payload.request.msg);
+                        io.to(conn.connection).emit('payload', payload.request.msg);                       
                       }
+                      
                     });
                   })
                   .catch(err => {
@@ -147,8 +150,8 @@ io.on('connection', socket => {
                 Device.find({ token: payload.token })
                   .then(devices => {
                     devices.forEach(device => {
-                      if (device.uuid === payload.request.destination) {
-                        io.to(device.connection).emit('register', payload.request.msg);
+                      if (device.uuid === payload.request.destination) {                        
+                        io.to(device.connection).emit('payload', payload.request.msg); //
                         console.log(payload.request.msg + " to " + payload.request.destination + " on socket: " + device.connection);
                       }
                     });
@@ -175,6 +178,9 @@ io.on('connection', socket => {
               socket.disconnect();
             } else {
               device.status = 'online';
+              if(device.email !== "Unregistered" && device.email !== "Deacitvated") {
+                socket.emit({ msg: 'register', token: device.token })
+              }
               device.save().then(() => console.log(`device ${device.uuid} online`)).catch(err => console.log(err));
             }
           }).catch(err => console.log(err));

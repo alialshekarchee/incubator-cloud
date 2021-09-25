@@ -94,5 +94,22 @@ router.get('/wss', ensureAuthenticated, (req, res) => {
   }).catch(err => console.log(err));
 });
 
+router.get('/viewer', ensureAuthenticated, (req, res) => {
+  User.findOne({ email: req.user.email }).then(user => {
+    res.render('viewer', {
+      token: user.token,
+      destination: req.query.d
+    });
+  }).catch(err => console.log(err));
+});
+
+router.get('/oldviewer', ensureAuthenticated, (req, res) => {
+  User.findOne({ email: req.user.email }).then(user => {
+    res.render('oldviewer', {
+      token: user.token,
+      destination: req.query.d
+    });
+  }).catch(err => console.log(err));
+});
 
 module.exports = router;
