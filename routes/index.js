@@ -19,7 +19,7 @@ router.get('/dashboard', ensureAuthenticated, (req, res) => {
       if (typeof req.query.email !== 'undefined' && req.query.email) {
         User.findOne({ email: req.query.email }).then(usr => {
           Device.find({ email: usr.email }).then(devices => {
-            res.render('dashboard', { user: usr, devices: devices });
+            res.render('dashboard', { user: usr, devices: devices, msg: { msg_type: '', msg_details: '' }, tab: '' });
           }).catch(err => console.log(err));          
         }).catch(err => console.log(err));
 

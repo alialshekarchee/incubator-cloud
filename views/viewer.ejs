@@ -12,76 +12,16 @@
             font-family: verdana;
         }
 
-        /* div,
-        input {
-            padding: 5px;
-            font-size: 1em;
-            margin: 5px 0;
-            box-sizing: border-box;
-        } */
-
-        /* input,
-        button,
-        .msg {
-            border-radius: .3rem;
-            width: 100%
-        }
-
-        input[type=radio] {
-            width: auto
-        } */
-
-        button,
-        input[type='button'],
-        input[type='submit'] {
-            cursor: pointer;
-            border: 0;
-            background-color: #1fa3ec;
-            color: #fff;
-            line-height: 2.4rem;
-            font-size: 1.2rem;
-            /* width: 100% */
-        }
-
-        input[type='file'] {
-            border: 1px solid #1fa3ec
-        }
-
         .wrap {
             text-align: center;
             display: inline-block;
             width: 100%;
             height: 650px;
-            background: #5c5c5c;
+            background: #31373a;
+            /* background-image: url('/images/image10.png'); */
             border-radius: 10px;
             position: relative;
             top: 40px;
-        }
-
-
-
-        body.invert,
-        body.invert a,
-        body.invert h1 {
-            background-color: #060606;
-            color: #fff;
-        }
-
-        body.invert .msg {
-            color: #fff;
-            background-color: #282828;
-            border-top: 1px solid #555;
-            border-right: 1px solid #555;
-            border-bottom: 1px solid #555;
-        }
-
-        body.invert .q[role=img] {
-            -webkit-filter: invert(1);
-            filter: invert(1);
-        }
-
-        input:disabled {
-            opacity: 0.5;
         }
 
         .fan,
@@ -91,10 +31,99 @@
         .water,
         .egg {
             display: inline-block;
-            border-radius: 10px;
-            background: #555;
-            box-shadow: 6px 6px 12px #000000,
-                -4px -4px 8px #aaaaaa;
+            padding: 10px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #2c3234, #343b3e);
+            box-shadow: 9px 9px 18px #272c2e,
+                -9px -9px 18px #3b4246;
+        }
+
+        @-webkit-keyframes rotating
+
+        /* Safari and Chrome */
+            {
+            from {
+                -webkit-transform: rotate(0deg);
+                -o-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+
+            to {
+                -webkit-transform: rotate(360deg);
+                -o-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes rotating {
+            from {
+                -ms-transform: rotate(0deg);
+                -moz-transform: rotate(0deg);
+                -webkit-transform: rotate(0deg);
+                -o-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+
+            to {
+                -ms-transform: rotate(360deg);
+                -moz-transform: rotate(360deg);
+                -webkit-transform: rotate(360deg);
+                -o-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+
+        .rotating {
+            -webkit-animation: rotating 2s linear infinite;
+            -moz-animation: rotating 2s linear infinite;
+            -ms-animation: rotating 2s linear infinite;
+            -o-animation: rotating 2s linear infinite;
+            animation: rotating 2s linear infinite;
+        }
+
+        @keyframes flipping
+
+        /* Safari and Chrome */
+            {
+
+            0%,
+            100% {
+                -webkit-transform: rotate(20deg);
+                -o-transform: rotate(20deg);
+                transform: rotate(20deg);
+            }
+
+            50% {
+                -webkit-transform: rotate(-20deg);
+                -o-transform: rotate(-20deg);
+                transform: rotate(-20deg);
+            }
+        }
+
+        @keyframes rotating {
+            from {
+                -ms-transform: rotate(0deg);
+                -moz-transform: rotate(0deg);
+                -webkit-transform: rotate(0deg);
+                -o-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+
+            to {
+                -ms-transform: rotate(360deg);
+                -moz-transform: rotate(360deg);
+                -webkit-transform: rotate(360deg);
+                -o-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+
+        .flipping {
+            -webkit-animation: flipping 1s linear infinite;
+            -moz-animation: flipping 1s linear infinite;
+            -ms-animation: flipping 1s linear infinite;
+            -o-animation: flipping 1s linear infinite;
+            animation: flipping 1s linear infinite;
         }
 
         .center {
@@ -231,7 +260,7 @@
         <div class="row">
             <div class="col-4 center">
                 <svg class="fan" width="85px" height="85px" viewBox="-35 -35 270 270">
-                    <path id="fanpath" fill="currentColor" d="m51.002 0c-10.745 0-21.362 4.7013-29.9 
+                    <path id="fanpath" fill="white" transform-origin="100px 100px" d="m51.002 0c-10.745 0-21.362 4.7013-29.9 
                     13.236-20.372 20.38-20.129 53.77 0.53515 
                     74.432 12.474 12.479 32.972 20.881 51.222 
                     21.086-2.1824 2.978-4.8504 5.5997-8.707 
@@ -256,7 +285,7 @@
                 </svg>
             </div>
             <div class="col-4 center">
-                <svg class="power" fill="currentColor" viewBox="-6 -6 75 75" width="85px" height="85px">
+                <svg class="power" fill="white" viewBox="-8.5 -6 80 80" width="85px" height="85px">
                     <path
                         d="M 59,12 H 56 V 11 A 3,3 0 0 0 53,8 V 3 A 1,1 0 0 0 52,2 h -6 a 1,1 0 0 0 -1,1 v 5 a 3,3 0 0 0 -3,3 v 1 H 22 V 11 A 3,3 0 0 0 19,8 V 3 A 1,1 0 0 0 18,2 h -6 a 1,1 0 0 0 -1,1 v 5 a 3,3 0 0 0 -3,3 v 1 H 5 a 3,3 0 0 0 -3,3 v 8 a 3,3 0 0 0 2,2.816 V 59 a 3,3 0 0 0 3,3 h 50 a 3,3 0 0 0 3,-3 V 25.816 A 3,3 0 0 0 62,23 V 15 A 3,3 0 0 0 59,12 Z M 47,4 h 4 v 4 h -4 z m -3,7 a 1,1 0 0 1 1,-1 h 8 a 1,1 0 0 1 1,1 v 1 H 44 Z M 13,4 h 4 v 4 h -4 z m -3,7 a 1,1 0 0 1 1,-1 h 8 a 1,1 0 0 1 1,1 v 1 H 10 Z m 48,48 a 1,1 0 0 1 -1,1 H 7 A 1,1 0 0 1 6,59 V 26 h 52 z m 2,-36 a 1,1 0 0 1 -1,1 H 5 A 1,1 0 0 1 4,23 v -8 a 1,1 0 0 1 1,-1 h 54 a 1,1 0 0 1 1,1 z"
                         id="power1" />
@@ -269,21 +298,18 @@
                 </svg>
             </div>
             <div class="col-4 center">
-                <svg class="door" viewBox="-10 -20 125 125" width="85px" height="85px" fill="currentColor">
-                    <path
-                    id="door1"
+                <svg class="door" viewBox="-10 -20 125 125" width="85px" height="85px" fill="white">
+                    <path id="door1"
                         d="m 44.938957,52.81724 c 0.553209,-0.956194 0.479289,-2.186608 -0.205069,-3.3741 L 25.471708,16.081273 c -0.684358,-1.185108 -1.712087,-1.864698 -2.818506,-1.864698 -1.106418,0 -2.131764,0.67959 -2.816122,1.864698 L 0.57251565,49.44314 c -0.68435821,1.185108 -0.75827844,2.415522 -0.20506901,3.371716 0.55320943,0.958578 1.65485926,1.509403 3.02357576,1.509403 H 41.917766 c 1.368716,0 2.467981,-0.550825 3.021191,-1.507019 z M 22.653202,49.075923 c -1.383023,0 -2.501365,-1.118341 -2.501365,-2.501365 0,-1.380639 1.120726,-2.501365 2.501365,-2.501365 1.380638,0 2.501364,1.120726 2.501364,2.501365 0,1.383024 -1.120726,2.501365 -2.501364,2.501365 z M 24.76112,40.556021 H 20.547668 L 20.151837,25.023235 h 5.002729 z" />
-                    <path
-                    id="door2"
+                    <path id="door2"
                         d="M 99.13202,0.546103 C 98.700421,0.193193 98.163904,0.004816 97.615463,0.0072 97.615463,0.0048 35.61547,0 35.61547,0 34.299214,0 33.230947,1.068266 33.230947,2.384523 V 19.98469 l 4.769047,8.25999 V 4.771431 h 34.8975 L 54.305365,8.393522 c -1.120726,0.219376 -1.92908,1.199416 -1.92908,2.339218 V 77.399292 H 37.999994 V 59.093306 h -4.769047 v 20.690509 c 0,1.318642 1.068267,2.384524 2.384523,2.384524 h 16.760815 v 6.459674 c 0,0.712972 0.317142,1.385408 0.867967,1.838467 0.431599,0.35291 0.968116,0.546056 1.516557,0.546056 0.152609,0 0.302834,-0.01431 0.455444,-0.04531 l 42.854654,-8.345832 c 1.120726,-0.219376 1.92908,-1.199415 1.92908,-2.339217 V 2.386951 C 100.00239,1.673978 99.682845,0.999158 99.13202,0.546099 Z M 62.794268,56.515636 c -2.112688,0 -3.824775,-2.95204 -3.824775,-6.597976 0,-3.645937 1.712087,-6.597976 3.824775,-6.597976 2.110303,0 3.822391,2.952039 3.822391,6.597976 0,3.645936 -1.712088,6.597976 -3.822391,6.597976 z" />
                 </svg>
             </div>
         </div>
         <div class="row">
             <div class="col-4 center">
-                <svg class="lamp" width="85px" height="85px" viewBox="0 -7 100 125" fill="currentColor">
-                    <path
-                    id="lamp"
+                <svg class="lamp" width="85px" height="85px" viewBox="0 -7 100 125" fill="white">
+                    <path id="lamp"
                         d="m 49.971051,2.2263821e-4 c -1.020892,0 -1.833778,0.84743900179 -1.819297,1.85839096179 v 7.33332 
             c -0.0273,1.0310654 0.807189,1.8798784 1.848239,1.8798974 1.041043,0 1.879153,-0.848832 1.851856,-1.8798974 
             v -7.33332 C 51.866549,0.82549664 51.014236,-0.01570936 49.971051,2.2263821e-4 Z 
@@ -307,11 +333,9 @@
                 </svg>
             </div>
             <div class="col-4 center">
-                <svg class="water" viewBox="0 -15 100 180" fill="currentColor" width="85px" height="85px">
+                <svg class="water" viewBox="0 -15 100 180" fill="white" width="85px" height="85px">
 
-                    <path 
-                    id="water"
-                    d="m 26.62115,103.54115 c 3.750462,6.78643 7.655802,13.18602
+                    <path id="water" d="m 26.62115,103.54115 c 3.750462,6.78643 7.655802,13.18602
                         10.683809,20.21717 15.047292,34.93177 -49.961647,35.01171
                         -35.0720153,0.10268 3.108692,-7.28674 7.126249,-13.51166
                         10.9230823,-20.32079 H 26.62115 Z m -4.104734,12.27221
@@ -346,16 +370,9 @@
                 </svg>
             </div>
             <div class="col-4 center">
-                <svg class="egg" fill="white" width="85px" height="85px" viewBox="0 -5 100 100">
-                    <path 
-                    id="egg1"
-                        d="m 81.9,51.2 c -1.5,-0.3 -3,0.7 -3.4,2.2 -0.6,3 -1.5,5.6 -2.5,7.9 -2.7,5.8 -6.7,9.1 -10.9,9.2 -1.6,0 -2.8,1.3 -2.8,2.9 0,1.6 1.3,2.8 2.8,2.8 0,0 0,0 0,0 6.5,0 12.4,-4.6 16.1,-12.5 1.3,-2.7 2.2,-5.8 2.9,-9.2 0.3,-1.5 -0.7,-3 -2.2,-3.3 z" />
-                    <path
-                    id="egg2"
-                        d="M 86.5,14.3 C 77,9.9 62.4,18.6 51.8,29.7 46.5,19.1 38.9,10.5 30.8,10.5 c -15.1,0 -28.3,29.3 -28.3,47 0,18.8 11.7,31.9 28.3,31.9 7,0 13,-2.3 17.7,-6.3 1.4,1 2.9,1.9 4.6,2.7 3.9,1.8 7.9,2.7 11.9,2.7 3.4,0 6.8,-0.7 10.1,-2 7.3,-3 13.3,-9.1 17.3,-17.6 7.4,-16 7.8,-48.2 -5.9,-54.6 z M 30.8,83.8 C 17.5,83.8 8.2,73 8.2,57.6 8.2,39.8 21.1,16.2 30.8,16.2 40.5,16.2 53.4,39.8 53.4,57.6 53.5,73 44.2,83.8 30.8,83.8 Z M 87.2,66.5 c -3.3,7.2 -8.3,12.3 -14.3,14.7 -5.5,2.3 -11.7,2.1 -17.3,-0.6 -1.1,-0.5 -2.1,-1.1 -3,-1.7 4.2,-5.5 6.6,-12.8 6.6,-21.3 0,-6.5 -1.8,-14.6 -4.8,-22.3 8.2,-9.3 19.3,-16.5 26.5,-16.5 1.2,0 2.3,0.2 3.3,0.7 8.7,4.1 10.5,30.9 3,47 z" />
-                    <path
-                    id="egg3"
-                        d="m 45.6,48 c -0.4,-1.5 -1.9,-2.5 -3.4,-2.1 -1.5,0.4 -2.5,1.9 -2.1,3.4 0.7,3 1.1,5.7 1.1,8.3 0,8.6 -3.8,13.8 -10.3,13.8 -1.6,0 -2.8,1.3 -2.8,2.8 0,1.6 1.3,2.8 2.8,2.8 9.7,0 16,-7.7 16,-19.5 -0.1,-2.9 -0.5,-6.1 -1.3,-9.5 z" />
+                <svg class="egg" fill="white" width="85px" height="85px" viewBox="0 0 17 17">
+                    <path id="egg" transform-origin="8.5px 17.5px"
+                        d="m 8.722263,1.0619799 c -0.0908,-0.005 -0.1829398,-0.005 -0.2754299,5.3e-4 -1.43836,0.0874 -2.64023,1.29488 -3.53881,2.81998 -0.89857,1.5251 -1.50323,3.40127 -1.68568,4.97696 -0.44493,3.8425501 2.29102,7.0155901 5.2425801,7.0155901 2.9516698,0 5.7080698,-3.17585 5.2420598,-7.0176601 -0.18013,-1.48485 -0.77462,-3.43398 -1.66812,-5.0214 -0.44677,-0.79372 -0.96866,-1.49635 -1.56633,-2.00194 -0.5229499,-0.44239 -1.11469,-0.73578 -1.75027,-0.77205 z m -0.0279,0.52916 c 0.4971003,0.0276 0.9743001,0.25633 1.4361,0.64699 0.52777,0.44647 1.02188,1.10114 1.44746,1.85725 0.85119,1.51223 1.43364,3.42624 1.60351,4.82658 0.43166,3.5586301 -2.15175,6.4233801 -4.7170199,6.4233801 -2.5654299,0 -5.1289999,-2.86299 -4.7165199,-6.4254401 0.17248,-1.48936 0.76094,-3.31744 1.61542,-4.76767 0.8544699,-1.45022 1.96413,-2.49047 3.11713,-2.56057 0.0718,-0.004 0.14293,-0.004 0.2139198,-5.3e-4 z m 3.15589,7.93492 a 0.26460982,0.26460982 0 0 0 -0.0279,10e-4 0.26460982,0.26460982 0 0 0 -0.2346,0.31471 C 11.885463,11.47037 11.087903,12.98814 9.6695229,13.79294 a 0.26510165,0.26510165 0 1 0 0.2619902,0.46095 C 11.526263,13.34901 12.447723,11.59977 12.109163,9.7476999 a 0.26460982,0.26460982 0 0 0 -0.25889,-0.22169 z" />
                 </svg>
             </div>
         </div>
@@ -459,10 +476,8 @@
             door2 = document.getElementById('door2'),
             lamp = document.getElementById('lamp'),
             water = document.getElementById('water'),
-            egg1 = document.getElementById('egg1'),
-            egg2 = document.getElementById('egg2'),
-            egg3 = document.getElementById('egg3');
-           
+            egg = document.getElementById('egg');
+
 
         var socket = io();
         socket.on('connect', () => socket.emit('payload', { token: '<%= token %>', client: 'viewer', request: { destination: '<%= destination %>', msg: 'register' } }));
@@ -487,18 +502,47 @@
                             d = payloadObj.GROP >> 3; d &= 1, // door
                                 e = payloadObj.GROP >> 4; e &= 1, // battery
                                     f = payloadObj.GROP >> 5; f &= 1; // fan
-                                  
-                f == 1 ? fan.style.fill = "green" : fan.style.fill = "orangered";
-                e == 1 ? power1.style.fill = "green" : power1.style.fill = "orangered";
-                e == 1 ? power2.style.fill = "green" : power2.style.fill = "orangered";
-                e == 1 ? power3.style.fill = "green" : power3.style.fill = "orangered";
-                d == 1 ? door1.style.fill = "green" : door1.style.fill = "orangered";
-                d == 1 ? door2.style.fill = "green" : door2.style.fill = "orangered"; 
-                c == 1 ? lamp.style.fill = "green" : lamp.style.fill = "orangered";   
-                b == 1 ? water.style.fill = "green" : water.style.fill = "orangered";
-                a == 1 ? egg1.style.fill = "green" : egg1.style.fill = "orangered";
-                a == 1 ? egg2.style.fill = "green" : egg2.style.fill = "orangered";
-                a == 1 ? egg3.style.fill = "green" : egg3.style.fill = "orangered";          
+                if (f == 1) {
+                    fan.style.fill = "#98c1d9";
+                    fan.classList.add("rotating");
+                } else {
+                    fan.style.fill = "white";
+                    fan.classList.remove("rotating");
+                }
+                if (e == 1) {
+                    power1.style.fill = "#ee6c4d";
+                    power2.style.fill = "#ee6c4d";
+                    power3.style.fill = "#ee6c4d";
+                } else {
+                    power1.style.fill = "white";
+                    power2.style.fill = "white";
+                    power3.style.fill = "white";
+                }
+                if (d == 1) {
+                    door1.style.fill = "#ee6c4d";
+                    door2.style.fill = "#ee6c4d";
+                } else {
+                    door1.style.fill = "white";
+                    door2.style.fill = "white";
+                }
+
+                if (c == 1) {
+                    lamp.style.fill = "yellow";
+                } else {
+                    lamp.style.fill = "white";
+                }
+                if (b == 1) {
+                    water.style.fill = "#ee6c4d";
+                } else {
+                    water.style.fill = "white";
+                }
+                if (a == 1) {
+                    egg.style.fill = "#98c1d9";
+                    egg.classList.add("flipping");
+                } else {
+                    egg.style.fill = "white";
+                    egg.classList.remove("flipping");
+                }
             }
         });
 
