@@ -1,0 +1,1 @@
+{"msg_type":"success","msg_details":"Device 5858 registered successfully.","account":"rabee@iqt.run","action":"Device registeration","type":"info","date":"17/12/2021 @ 21:48:6"},

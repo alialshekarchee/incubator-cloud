@@ -1,17 +1,9 @@
 <h1 class="mt-4">Dashboard</h1>
-<p class="lead mb-3">Welcome <%= user.name %></p>
-
-<!-- <a href="/wss" class="btn btn-secondary">esp</a> -->
-<a href="/users/logout" class="btn btn-secondary">Logout</a>
+<p class="lead mb-3">Welcome <%= user.name %>
+</p>
 <hr>
-<ul>
-    <% devices.forEach(device => { %>
-        <a href="/viewer?d=<%= device.uuid %>&option=com_jumi&amp;fileid=3&amp;Itemid=11" onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=450,height=630'); return false;" class="btn btn-secondary">Incubator #<%= device.uuid %></a>
-    <% }) %>
-</ul>
-
 <div class="row">
-    <div class="col-lg-2 col-md-3" style="background-color: rgb(247, 247, 247);">
+    <div class="col-lg-2 col-md-3">
         <img class="img-fluid my-2" width="100px" src="<%= user.photo %>" alt="profile-photo" data-toggle="modal"
             data-target="#uploadModal">
         <h6>
@@ -22,26 +14,18 @@
             <!-- Sidebar -->
             <nav id="sidebar">
                 <div class="list-group">
-                    <a href="/admindashboard" class="list-group-item" role="button" id="stats-btn">Stats</a>
-                    <a href="/admindashboard?tab=accounts" class="list-group-item" role="button"
-                        id="accounts-btn">Accounts</a>
-                    <a href="/admindashboard?tab=devices" class="list-group-item" role="button"
-                        id="devices-btn">Devices</a>
-                    <a href="/admindashboard?tab=settings" class="list-group-item" role="button"
+                    <a href="/dashboard" class="list-group-item" role="button" id="stats-btn">Stats</a>
+                    <a href="/dashboard?tab=devices" class="list-group-item" role="button"
+                        id="devices-btn">Incubators</a>
+                    <a href="/dashboard?tab=settings" class="list-group-item" role="button"
                         id="settings-btn">Settings</a>
                     <a href="/users/logout" class="list-group-item" role="button">Logout</a>
                 </div>
             </nav>
         </div>
     </div>
-    <div class="col-lg-10 col-md-9">
-        <h1 class="mt-4">Dashboard</h1>
-        <p class="lead mb-3">Welcome Admin <%= user.name %>
-        </p>
-        <a href="/ws" target="_blank" class="btn btn-secondary">viewer</a>
-        <a href="/wss" class="btn btn-secondary">esp</a>
-        <hr>
-
+    <!-- Devices list -->
+    <div class="col-lg-10 col-md-9 usr-device-list" id="devicetable">
         <% if (msg.msg_type==='success' ) { %>
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <%= msg.msg_details %>
@@ -59,6 +43,64 @@
                             </button>
                     </div>
                     <% } %>
+                        <h1 class="mt-4">Your incubators</h1>
+                        <button style="margin-bottom: 10px; margin-top: 5px;" type="button" class="btn btn-primary mb-3"
+                            data-toggle="modal" data-target="#addDeviceModal" id="addNewDeviceBtn"
+                            style="display: none">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor"
+                                class="bi bi-hdd" viewBox="0 2 16 16">
+                                <path
+                                    d="M4.5 11a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zM3 10.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z" />
+                                <path
+                                    d="M16 11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V9.51c0-.418.105-.83.305-1.197l2.472-4.531A1.5 1.5 0 0 1 4.094 3h7.812a1.5 1.5 0 0 1 1.317.782l2.472 4.53c.2.368.305.78.305 1.198V11zM3.655 4.26 1.592 8.043C1.724 8.014 1.86 8 2 8h12c.14 0 .276.014.408.042L12.345 4.26a.5.5 0 0 0-.439-.26H4.094a.5.5 0 0 0-.44.26zM1 10v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1z" />
+                            </svg><span class="ml-2">Add new incubator</span>
+                        </button>
+                        <hr>
+                        <ul style="list-style-type:none;">
+                            <% devices.forEach(device=> { %>
+                                <li>
+
+                                    <a href="/viewer?d=<%= device.uuid %>&option=com_jumi&amp;fileid=3&amp;Itemid=11"
+                                        onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=450,height=630'); return false;"
+                                        class="btn btn-secondary device-btn">
+                                        <img src="/images/incubator_icon.png" alt="incubator_icon" width="50px">
+                                        <%= device.name %>
+                                    </a>
+                                    <% if (device.status==='online' ) { %>
+                                        <div class="status-ind" style="background-color: green;"></div>
+                                        <% } else { %>
+                                            <div class="status-ind" style="background-color: orangered;"></div>
+                                            <% } %>
+                                                <div class="user-btns-cont">
+                                                    <button type="button" class="btn btn-primary btn-sm user-btn"
+                                                        data-toggle="modal" data-target="#renameDeviceModal"
+                                                        onclick="confirmDeviceRename('<%= device.name %>', '<%= device.uuid %>')">
+
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                            fill="currentColor" class="bi bi-pencil"
+                                                            viewBox="0 0 16 16">
+                                                            <path
+                                                                d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
+                                                        </svg>
+                                                    </button>
+                                                    <button type="button" class="btn btn-primary btn-sm user-btn"
+                                                        data-toggle="modal" data-target="#deleteDeviceModal"
+                                                        onclick="confirmDeviceDelete('<%= device.uuid %>')"><svg
+                                                            xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                            fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                                            <path
+                                                                d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                                                            <path fill-rule="evenodd"
+                                                                d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                                                        </svg></button>
+                                                </div>
+                                                <br>
+                                </li>
+                                <% }) %>
+                        </ul>
+                        <hr>
+
+
 
                         <button type="button" class="btn btn-primary mb-3" data-toggle="modal"
                             data-target="#addUserModal" id="addNewAccountBtn" style="display: none">
@@ -82,129 +124,8 @@
                                 <th scope="col">Created on</th>
                                 <th scope="col">Actions</th>
                             </thead>
-                           
+
                         </table>
-
-
-                        <!-- Add User Modal -->
-                        <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog"
-                            aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Add new account</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-
-                                        <form action="/admindashboard" method="GET" id="adduserform">
-                                            <div class="form-group">
-                                                <label for="name">Name</label>
-                                                <input class="form-control" type="text" name="name" id="newusername">
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="email">Email</label>
-                                                <input class="form-control" type="text" name="email" id="newuseremail">
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="name">Password</label>
-                                                <input class="form-control" type="text" name="password"
-                                                    id="newuserpassword">
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="name">Role</label>
-                                                <select class="form-control" name="role" id="newuserrole">
-                                                    <option value="god">God</option>
-                                                    <option value="master">Master</option>
-                                                    <option value="peasant">Peasant</option>
-                                                </select>
-                                            </div>
-                                        </form>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-dismiss="modal">Close</button>
-                                        <button type="button" class="btn btn-primary" onclick="addUser()">Create
-                                            account</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Edit User Modal -->
-                        <div class="modal fade" id="editModal" tabindex="-1" role="dialog"
-                            aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Edit user account</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-
-                                        <form action="/admindashboard" method="GET" id="edituserform">
-                                            <input type="hidden" name="email" id="email">
-                                            <div class="form-group">
-                                                <label for="name">Name</label>
-                                                <input class="form-control" type="text" name="name" id="name">
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="name">Password</label>
-                                                <input class="form-control" type="text" name="password" id="password">
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="name">Role</label>
-                                                <select class="form-control" name="role" id="role">
-                                                    <option value="god">God</option>
-                                                    <option value="master">Master</option>
-                                                    <option value="peasant">Peasant</option>
-                                                </select>
-                                            </div>
-                                        </form>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-dismiss="modal">Close</button>
-                                        <button type="button" class="btn btn-primary" onclick="saveUser()">Save
-                                            changes</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Delete User Modal -->
-                        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog"
-                            aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Delete account</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <form>
-                                            <input type="hidden" name="email" id="deleteEmail">
-                                            <div class="form-group">
-                                                <label id="deleteemaillable">Are you sure you to delete this account (
-                                                </label>
-                                            </div>
-                                        </form>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-dismiss="modal">Cancle</button>
-                                        <button type="button" class="btn btn-primary" onclick="deleteUser()">Delete
-                                            account</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
                         <!-- Upload Profile Photo Modal -->
                         <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog"
@@ -239,104 +160,6 @@
                             </div>
                         </div>
 
-                        <button type="button" class="btn btn-primary mb-3" data-toggle="modal"
-                            data-target="#addDeviceModal" id="addNewDeviceBtn" style="display: none">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor"
-                                class="bi bi-hdd" viewBox="0 2 16 16">
-                                <path
-                                    d="M4.5 11a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zM3 10.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z" />
-                                <path
-                                    d="M16 11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V9.51c0-.418.105-.83.305-1.197l2.472-4.531A1.5 1.5 0 0 1 4.094 3h7.812a1.5 1.5 0 0 1 1.317.782l2.472 4.53c.2.368.305.78.305 1.198V11zM3.655 4.26 1.592 8.043C1.724 8.014 1.86 8 2 8h12c.14 0 .276.014.408.042L12.345 4.26a.5.5 0 0 0-.439-.26H4.094a.5.5 0 0 0-.44.26zM1 10v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1z" />
-                            </svg><span class="ml-2">Add new Device</span>
-                        </button>
-
-                        <table class="table table-striped table-hover table-condensed"
-                            style="margin: 5px 0px 0px 0px; display: none;" id="devicetable">
-                            <thead>
-                                <th scope="col">#</th>
-                                <th scope="col">Name</th>
-                                <th scope="col">UUID</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Created on</th>
-                                <th scope="col">Actions</th>
-                            </thead>
-                            <tbody>
-                                <% if(devices){ %>
-                                    <% var i=0; %>
-                                        <% devices.forEach(showdevice=> { %>
-                                            <% i++; %>
-                                                <tr>
-                                                    <th scope="row">
-                                                        <%= i %>
-                                                    </th>
-                                                    <td>
-                                                        <%= showdevice.name %>
-                                                    </td>
-                                                    <td>
-                                                        <%= showdevice.uuid %>
-                                                    </td>
-                                                    <td>
-                                                        <%= showdevice.email %>
-                                                    </td>
-                                                    <td>
-                                                        <%= showdevice.date %>
-                                                    </td>
-                                                    <td>
-                                                        <button type="button" class="btn btn-primary btn-sm"
-                                                            data-toggle="modal" data-target="#renameDeviceModal"
-                                                            onclick="confirmDeviceRename('<%= showdevice.name %>', '<%= showdevice.uuid %>')">
-                                                            
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                                height="16" fill="currentColor" class="bi bi-pencil"
-                                                                viewBox="0 0 16 16">
-                                                                <path
-                                                                    d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
-                                                            </svg>
-                                                        </button>
-                                                        <button type="button" class="btn btn-primary btn-sm"
-                                                            data-toggle="modal" data-target="#linkUnlinkDeviceModal"
-                                                            onclick="confirmLinkUnlink('<%= showdevice.email %>', '<%= showdevice.uuid %>')">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                                height="16" fill="currentColor" class="bi bi-link"
-                                                                viewBox="1 3 14 14">
-                                                                <path
-                                                                    d="M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-4H9c-.086 0-.17.01-.25.031A2 2 0 0 1 7 10.5H4a2 2 0 1 1 0-4h1.535c.218-.376.495-.714.82-1z" />
-                                                                <path
-                                                                    d="M9 5.5a3 3 0 0 0-2.83 4h1.098A2 2 0 0 1 9 6.5h3a2 2 0 1 1 0 4h-1.535a4.02 4.02 0 0 1-.82 1H12a3 3 0 1 0 0-6H9z" />
-                                                            </svg>
-                                                        </button>
-                                                        <hr>
-                                                        <button type="button" class="btn btn-primary btn-sm"
-                                                            data-toggle="modal" data-target="#lockunlockDeviceModal"
-                                                            onclick="confirmLockUnlock('<%= showdevice.email %>', '<%= showdevice.uuid %>')">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                                height="16" fill="currentColor" class="bi bi-lock"
-                                                                viewBox="0 0 16 16">
-                                                                <path
-                                                                    d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2zM5 8h6a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z" />
-                                                            </svg>
-                                                        </button>
-                                                        <button type="button" class="btn btn-primary btn-sm"
-                                                            data-toggle="modal" data-target="#deleteDeviceModal"
-                                                            onclick="confirmDeviceDelete('<%= showdevice.uuid %>')"><svg
-                                                                xmlns="http://www.w3.org/2000/svg" width="16"
-                                                                height="16" fill="currentColor" class="bi bi-trash"
-                                                                viewBox="0 0 16 16">
-                                                                <path
-                                                                    d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
-                                                                <path fill-rule="evenodd"
-                                                                    d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
-                                                            </svg></button>
-
-                                                    </td>
-                                                </tr>
-                                                <% }); %>
-                                                    <% } %>
-                            </tbody>
-                        </table>
-
-
-
                         <!-- Add Device Modal -->
                         <div class="modal fade" id="addDeviceModal" tabindex="-1" role="dialog"
                             aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -350,7 +173,7 @@
                                     </div>
                                     <div class="modal-body">
 
-                                        <form action="/admindashboard" method="GET" id="adduserform">
+                                        <form action="/dashboard" method="GET" id="adduserform">
                                             <div class="form-group">
                                                 <label for="name">Name</label>
                                                 <input class="form-control" type="text" name="name" id="newdevicename">
@@ -432,84 +255,259 @@
                             </div>
                         </div>
 
-                        <!-- Link/Unlink Device Modal -->
-                        <div class="modal fade" id="linkUnlinkDeviceModal" tabindex="-1" role="dialog"
-                            aria-labelledby="exampleModalLabel" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Link / Unlink device</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <form>
-                                            <input type="hidden" name="uuid" id="linkunlinkuuid">
-                                            <input type="hidden" name="status" id="linkunlinkstatus">
-
-                                            <div class="form-group">
-                                                <label id="linkunlinklable"></label>
-                                                <input type="hidden" name="email" id="linkunlinkemail"
-                                                    class="form-control">
-                                            </div>
-                                        </form>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-dismiss="modal">Cancle</button>
-                                        <button type="button" class="btn btn-primary" onclick="linkUnlinkDevice()"
-                                            id="linkunlinksubmitbtn">Link / Unlink device</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                         <!-- Lock/Unlock Device Modal -->
-                         <div class="modal fade" id="lockunlockDeviceModal" tabindex="-1" role="dialog"
-                         aria-labelledby="exampleModalLabel" aria-hidden="true">
-                         <div class="modal-dialog" role="document">
-                             <div class="modal-content">
-                                 <div class="modal-header">
-                                     <h5 class="modal-title">Lock / Unlock device</h5>
-                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                         <span aria-hidden="true">&times;</span>
-                                     </button>
-                                 </div>
-                                 <div class="modal-body">
-                                     <form>
-                                         <input type="hidden" name="uuid" id="lockunlockuuid">
-                                         <input type="hidden" name="status" id="lockunlockstatus">
-
-                                         <div class="form-group">
-                                             <label id="lockunlocklable"></label>
-                                             <input type="hidden" name="email" id="lockunlockemail"
-                                                 class="form-control">
-                                         </div>
-                                     </form>
-                                 </div>
-                                 <div class="modal-footer">
-                                     <button type="button" class="btn btn-secondary"
-                                         data-dismiss="modal">Cancle</button>
-                                     <button type="button" class="btn btn-primary" onclick="lockunlockDevice()"
-                                         id="lockunlocksubmitbtn">Lock / Unlock device</button>
-                                 </div>
-                             </div>
-                         </div>
-                     </div>
-
-
-
-                        <form action="/admindashboard?tab=accounts" method="POST" id="accountsform">
-                            <input type="hidden" name="user" value="<%= user %>">
-                            <input type="hidden" name="msg" id="accountsmsg">
-                        </form>
-
-                        <form action="/admindashboard?tab=devices" method="POST" id="devicesform">
+                        <form action="/dashboard?tab=devices" method="POST" id="devicesform">
                             <input type="hidden" name="user" value="<%= user %>">
                             <input type="hidden" name="msg" id="devicesmsg">
                         </form>
 
 
     </div>
+
+    <div class="canvas-container col-lg-10 col-md-9" id="canvas_container">
+        <div class="timeframe-btns-container">
+            <div class="timeframe-btn active-timeframe-btn" id="1m">1m</div>
+            <div class="timeframe-btn" id="5m">5m</div>
+            <div class="timeframe-btn" id="30m">30m</div>
+            <div class="timeframe-btn" id="1H">1H</div>
+            <div class="timeframe-btn" id="1D">1D</div>
+        </div>
+        <canvas id="Chart"></canvas>
+    </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/luxon@2.1.1/build/global/luxon.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.1.0/dist/chartjs-adapter-luxon.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@2.0.0/dist/chartjs-plugin-streaming.min.js"></script>
+
+<script>
+    const data = {
+        labels: [],
+        datasets: [{
+            label: 'Temperature',
+            data: [],
+            backgroundColor: 'rgba(255, 255, 0, 0.2)',
+            borderColor: 'rgba(255, 255, 0, 1)',
+            borderWidth: 2,
+            tension: 0.5
+        },
+        {
+            label: 'Max Temperature',
+            data: [],
+            backgroundColor: 'rgba(255, 0, 0, 0.2)',
+            borderColor: 'rgba(255, 0, 0, 1)',
+            borderWidth: 2,
+            tension: 0.5
+        },
+        {
+            label: 'Min Temperature',
+            data: [],
+            backgroundColor: 'rgba(0, 0, 255, 0.2)',
+            borderColor: 'rgba(0, 0, 255, 1)',
+            borderWidth: 2,
+            tension: 0.5
+        },
+        {
+            label: 'Set Temperature',
+            data: [],
+            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+            borderColor: 'rgba(255, 255, 255, 1)',
+            borderWidth: 2,
+            tension: 0.1
+        }]
+    };
+
+    const config = {
+        type: 'line',
+        data,
+        options: {
+            elements: {
+                point: {
+                    radius: 0
+                }
+            },
+            scales: {
+                x: {
+                    type: 'realtime',
+                    realtime: {
+                        duration: 60000,
+                        onRefresh: chart => {
+                            chart.data.datasets[0].data.push({
+                                x: Date.now(),
+                                y: Math.floor(Math.random() * (2.50) + 37.00)
+
+                            });
+                            chart.data.datasets[1].data.push({
+                                x: Date.now(),
+                                y: 38.55
+                            });
+                            chart.data.datasets[2].data.push({
+                                x: Date.now(),
+                                y: 36.55
+                            });
+                            chart.data.datasets[3].data.push({
+                                x: Date.now(),
+                                y: 37.55
+                            });
+                        }
+                    }
+                },
+                y: {
+                    beginAtZero: false
+                }
+            }
+        }
+    };
+
+    const chart = new Chart(
+        document.getElementById('Chart'),
+        config
+    );
+</script>
+
+
+<script>
+    function uploadPhoto() {
+        document.getElementById('uploadForm').submit();
+    }
+
+    function addDevice() {
+        var name = document.getElementById("newdevicename").value,
+            uuid = document.getElementById("newdeviceuuid").value;
+        console.log(name + uuid);
+        var xhr = new XMLHttpRequest();
+        xhr.open('PUT', '/api/user/device');
+        xhr.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("devicesmsg").value = this.responseText;
+                document.getElementById("devicesform").submit();
+            }
+        };
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.setRequestHeader('x-access-token', '<%= user.token %>');
+        xhr.send(`name=${name}&uuid=${uuid}&email=<%= user.email %>`);
+    }
+
+    function confirmDeviceRename(name, uuid) {
+        document.getElementById("devicerenameinput").value = name;
+        document.getElementById('renameuuid').value = uuid;
+    }
+
+    function renameDevice() {
+        var name = document.getElementById('devicerenameinput').value,
+            uuid = document.getElementById('renameuuid').value;
+        var xhr = new XMLHttpRequest();
+        xhr.open('PUT', `/api/user/device?uuid=${uuid}`);
+        xhr.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("devicesmsg").value = this.responseText;
+                document.getElementById("devicesform").submit();
+            }
+        };
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.setRequestHeader('x-access-token', '<%= user.token %>');
+        xhr.send(`name=${name}&uuid=${uuid}&email=<%= user.email %>`);
+    }
+
+    function confirmDeviceDelete(uuid) {
+        document.getElementById('deleteuuidlable').innerText += uuid + " )?";
+        document.getElementById('deleteuuid').value = uuid;
+    }
+
+    function deleteDevice() {
+        var uuid = document.getElementById('deleteuuid').value;
+        var xhr = new XMLHttpRequest();
+        xhr.open('DELETE', '/api/user/device?uuid=' + uuid);
+        xhr.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                document.getElementById("devicesmsg").value = this.responseText;
+                document.getElementById("devicesform").submit();
+            }
+        };
+        xhr.setRequestHeader('x-access-token', '<%= user.token %>');
+        xhr.send();
+    }
+
+
+
+</script>
+
+<script type="text/javascript">
+    function autorun() {
+        if ('<%= tab %>' === '') {
+            var statsbtn = document.getElementById('stats-btn'),
+                canvasContainer = document.getElementById('canvas_container');
+            statsbtn.classList.add('active');
+            canvasContainer.style.display = 'block';
+        }
+        if ('<%= tab %>' === 'devices') {
+            var deviceTable = document.getElementById('devicetable'),
+                newDeviceBtn = document.getElementById('addNewDeviceBtn'),
+                devicesbtn = document.getElementById('devices-btn'),
+                canvasContainer = document.getElementById('canvas_container');
+            deviceTable.style.display = 'block';
+            newDeviceBtn.style.display = 'block';
+            devicesbtn.classList.add('active');
+            canvasContainer.style.display = 'none';
+        }
+        if ('<%= tab %>' === 'settings') {
+            var settingsbtn = document.getElementById('settings-btn'),
+                canvasContainer = document.getElementById('canvas_container');
+            settingsbtn.classList.add('active');
+            canvasContainer.style.display = 'none';
+        }
+    }
+    if (document.addEventListener) document.addEventListener("DOMContentLoaded", autorun, false);
+    else if (document.attachEvent) document.attachEvent("onreadystatechange", autorun);
+    else window.onload = autorun;
+</script>
+<script>
+    var mbtn1 = document.getElementById('1m'),
+        mbtn5 = document.getElementById('5m'),
+        mbtn30 = document.getElementById('30m'),
+        hbtn1 = document.getElementById('1H'),
+        dbtn1 = document.getElementById('1D');
+
+
+    mbtn1.addEventListener('click', () => {
+        mbtn1.classList.add('active-timeframe-btn');
+        mbtn5.classList.remove('active-timeframe-btn');
+        mbtn30.classList.remove('active-timeframe-btn');
+        hbtn1.classList.remove('active-timeframe-btn');
+        dbtn1.classList.remove('active-timeframe-btn');
+        config.options.scales.x.realtime.duration = 60000;
+    });
+    mbtn5.addEventListener('click', () => {
+        mbtn1.classList.remove('active-timeframe-btn');
+        mbtn5.classList.add('active-timeframe-btn');
+        mbtn30.classList.remove('active-timeframe-btn');
+        hbtn1.classList.remove('active-timeframe-btn');
+        dbtn1.classList.remove('active-timeframe-btn');
+        config.options.scales.x.realtime.duration = 300000;
+    });
+    mbtn30.addEventListener('click', () => {
+        mbtn1.classList.remove('active-timeframe-btn');
+        mbtn5.classList.remove('active-timeframe-btn');
+        mbtn30.classList.add('active-timeframe-btn');
+        hbtn1.classList.remove('active-timeframe-btn');
+        dbtn1.classList.remove('active-timeframe-btn');
+        config.options.scales.x.realtime.duration = 1800000;
+    });
+    hbtn1.addEventListener('click', () => {
+        mbtn1.classList.remove('active-timeframe-btn');
+        mbtn5.classList.remove('active-timeframe-btn');
+        mbtn30.classList.remove('active-timeframe-btn');
+        hbtn1.classList.add('active-timeframe-btn');
+        dbtn1.classList.remove('active-timeframe-btn');
+        config.options.scales.x.realtime.duration = 3600000;
+    });
+    dbtn1.addEventListener('click', () => {
+        mbtn1.classList.remove('active-timeframe-btn');
+        mbtn5.classList.remove('active-timeframe-btn');
+        mbtn30.classList.remove('active-timeframe-btn');
+        hbtn1.classList.remove('active-timeframe-btn');
+        dbtn1.classList.add('active-timeframe-btn');
+        config.options.scales.x.realtime.duration = 3600000 * 24;
+    });
+
+</script>

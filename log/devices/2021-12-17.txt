@@ -1,0 +1,1 @@
+{"msg_type":"success","msg_details":"Device connected successfully.","uuid":"3971225","account":"rabee@iqt.run","action":"Device accepted","type":"info","date":"17/12/2021 @ 21:43:46"},{"msg_type":"success","msg_details":"Device connected successfully.","uuid":"3971225","account":"rabee@iqt.run","action":"Device accepted","type":"info","date":"17/12/2021 @ 21:46:51"},

@@ -1,0 +1,1 @@
+{"msg_type":"success","msg_details":"A viewer to device 3971225 opened successfully.","account":"rabee@iqt.run","action":"request accepted","type":"info","date":"29/11/2021 @ 20:19:2"},

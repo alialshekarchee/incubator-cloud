@@ -7,7 +7,7 @@ const session = require('express-session');
 const Connection = require('./models/Connection');
 const fileUpload = require('express-fileupload');
 const BLANK_DEVICE_PASSPHRASE = 'YK$gkE%YdFzTbt%NyK%fBN&-z83AP@hV*ey?RfJ8G?Z5WX3@rs!b+*@KUBjGx36tQDMqr5q89NS#w&Ye3F$tr6Yp?Gaj-d79StJD8D-2suhQVwX@jzQ?22P%G#QyfvP&V@q*HG_2QnJ#AA3m+VVGvk_w?#GKE58cF-ZHW$YRrW4Q9uHcsk2AfP5FeUcg$*!_grbV?KV9%Y?Un8MLLSb@mX*=?!dLJ$tHZF*tXMxtVyuPQ@gs2qZk@ZBDQtd&epv+'
-
+const log = require('./assets/js/log.js');
 const app = express();
 
 const http = require('http').Server(app);
@@ -93,27 +93,40 @@ io.on('connection', socket => {
   const conn = new Connection();
 
   socket.on('payload', payload => {
-    // console.log(payload)
+    console.log(payload)
     if (payload.token) {  // check if the connection request is comming from linked device or an authorized viewer
       User.findOne({ token: payload.token })
         .then(user => {
           if (!user) {
             socket.emit({ msg: 'invalid token' });
             console.log('invalid access');
+            log.system('info', { msg_type: 'success', msg_details: `Rejected an attempt to connect with invalid token: ${payload.token}` });
             socket.disconnect();
           } else {
             if (payload.request.msg === 'register') {
               if (payload.client !== 'viewer') {
-                console.log(payload)
                 Device.findOne({ uuid: payload.client })
                   .then(device => {
                     if (!device) {
-                      socket.emit({ msg: 'device not registered' });
-                      console.log('device not registered');
+                      socket.emit({ msg: 'Device not supported, conatct support.' });
+                      console.log('Removed or fake device connection blocked.');
+                      log.device('info', { msg_type: 'success', msg_details: 'Removed or fake device connection blocked.', uuid: payload.client, account: user.email, action: 'Device rejected' });
+                      socket.disconnect();
+                    } else if (device.email === 'Unregistered') {
+                      socket.emit({ msg: 'Device not registered.' });
+                      console.log('Unregistered device connection blocked.');
+                      log.device('info', { msg_type: 'success', msg_details: `Unregistered device connection blocked.`, uuid: payload.client, account: user.email, action: 'Device rejected' });
+                      socket.disconnect();
+                    } else if (device.email === 'Deactivated') {
+                      socket.emit({ msg: 'Device Deactivated, conatct support.' });
+                      console.log('Deactivated device connection blocked.');
+                      log.device('info', { msg_type: 'success', msg_details: `Deactivated device connection blocked.`, uuid: payload.client, account: user.email, action: 'Device rejected' });
                       socket.disconnect();
                     } else {
                       device.connection = socket.id;
+                      device.status = 'online';
                       device.save().then(() => console.log('connection saved!')).catch((err) => console.log(err));
+                      log.device('info', { msg_type: 'success', msg_details: `Device connected successfully.`, uuid: device.uuid, account: device.email, action: 'Device accepted' });
                     }
                   })
                   .catch(err => {
@@ -127,19 +140,18 @@ io.on('connection', socket => {
                 conn.destination = payload.request.destination;
                 console.log(conn);
                 conn.save().then(() => console.log('connection saved!')).catch((err) => console.log(err));
-                // console.log('token from ( ' + socket.id + ' ): ' + payload.token);
+                log.user('info', { msg_type: 'success', msg_details: `A viewer to device ${conn.destination} opened successfully.`, account: user.email, action: 'request accepted' });
               }
             } else {
               if (payload.client !== 'viewer') {
+                log.data('info', { msg_type: 'success', msg_details: `Device sent data`, uuid: payload.client, account: user.email, msg: payload.request.msg }, payload.client);
                 Connection.find({ token: payload.token })
                   .then(connections => {
                     console.log(`${connections.length} clients available`);
-                    connections.forEach(conn => {
-                                        
+                    connections.forEach(conn => {                                        
                       if (conn.destination === payload.client) {
                         io.to(conn.connection).emit('payload', payload.request.msg);                       
-                      }
-                      
+                      }                      
                     });
                   })
                   .catch(err => {
@@ -197,6 +209,7 @@ io.on('connection', socket => {
     } else {
       socket.emit({ msg: 'access denied' });
       console.log('access denied');
+      log.system('info', { msg_type: 'success', msg_details: `Rejected an attempt to connect without a token` });
       socket.disconnect();
     }
   });

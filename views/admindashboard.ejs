@@ -1,5 +1,6 @@
 <div class="row">
-    <div class="col-lg-2 col-md-3" style="background-color: rgb(247, 247, 247);">
+    <!-- <div class="col-lg-2 col-md-3" style="background-color: rgb(247, 247, 247);"> -->
+    <div class="col-lg-2 col-md-3">
         <img class="img-fluid my-2" width="100px" src="<%= user.photo %>" alt="profile-photo" data-toggle="modal"
             data-target="#uploadModal">
         <h6>
@@ -17,6 +18,7 @@
                         id="devices-btn">Devices</a>
                     <a href="/admindashboard?tab=settings" class="list-group-item" role="button"
                         id="settings-btn">Settings</a>
+                    <a href="/admindashboard?tab=logs" class="list-group-item" role="button" id="logs-btn">Logs</a>
                     <a href="/users/logout" class="list-group-item" role="button">Logout</a>
                 </div>
             </nav>
@@ -26,8 +28,6 @@
         <h1 class="mt-4">Dashboard</h1>
         <p class="lead mb-3">Welcome Admin <%= user.name %>
         </p>
-        <a href="/ws" target="_blank" class="btn btn-secondary">viewer</a>
-        <a href="/wss" class="btn btn-secondary">esp</a>
         <hr>
 
         <% if (msg.msg_type==='success' ) { %>
@@ -323,7 +323,7 @@
                                                         <button type="button" class="btn btn-primary btn-sm"
                                                             data-toggle="modal" data-target="#renameDeviceModal"
                                                             onclick="confirmDeviceRename('<%= showdevice.name %>', '<%= showdevice.uuid %>')">
-                                                            
+
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="16"
                                                                 height="16" fill="currentColor" class="bi bi-pencil"
                                                                 viewBox="0 0 16 16">
@@ -373,6 +373,29 @@
                             </tbody>
                         </table>
 
+
+                        <div class="logs-container" id="logs_container">
+                            <select class="log-select" name="log" id="log_select">
+                                <option value="system">System</option>
+                                <option value="users">Users</option>
+                                <option value="devices">Devices</option>
+                                <option value="data">Data</option>
+                            </select>
+                            <input type="text" id="uuid_log_search" style="display: none;">
+                            <input class="log-date" type="date" id="log_date">
+
+                            <i class="fas fa-search" id="search_icon"></i>
+
+                            <hr>
+
+                            <div class="loader-container" id="loader_container"><div class="lds-ripple"><div></div><div></div></div></div>                            
+
+                            <h4 id="logerrormsg" style="display: none;"></h4>
+
+                            <table class="table table-striped table-hover table-condensed log-table"
+                                style="margin: 5px 0px 0px 0px; display: none;" id="systemlogtable">
+                            </table>
+                        </div>
 
 
                         <!-- Add Device Modal -->
@@ -455,8 +478,7 @@
                                         <form>
                                             <input type="hidden" name="uuid" id="deleteuuid">
                                             <div class="form-group">
-                                                <label id="deleteuuidlable">Are you sure you to delete this device (
-                                                </label>
+                                                <label id="deleteuuidlable">Are you sure you to delete this device (</label>
                                             </div>
                                         </form>
                                     </div>
@@ -503,38 +525,38 @@
                             </div>
                         </div>
 
-                         <!-- Lock/Unlock Device Modal -->
-                         <div class="modal fade" id="lockunlockDeviceModal" tabindex="-1" role="dialog"
-                         aria-labelledby="exampleModalLabel" aria-hidden="true">
-                         <div class="modal-dialog" role="document">
-                             <div class="modal-content">
-                                 <div class="modal-header">
-                                     <h5 class="modal-title">Lock / Unlock device</h5>
-                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                         <span aria-hidden="true">&times;</span>
-                                     </button>
-                                 </div>
-                                 <div class="modal-body">
-                                     <form>
-                                         <input type="hidden" name="uuid" id="lockunlockuuid">
-                                         <input type="hidden" name="status" id="lockunlockstatus">
+                        <!-- Lock/Unlock Device Modal -->
+                        <div class="modal fade" id="lockunlockDeviceModal" tabindex="-1" role="dialog"
+                            aria-labelledby="exampleModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Lock / Unlock device</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form>
+                                            <input type="hidden" name="uuid" id="lockunlockuuid">
+                                            <input type="hidden" name="status" id="lockunlockstatus">
 
-                                         <div class="form-group">
-                                             <label id="lockunlocklable"></label>
-                                             <input type="hidden" name="email" id="lockunlockemail"
-                                                 class="form-control">
-                                         </div>
-                                     </form>
-                                 </div>
-                                 <div class="modal-footer">
-                                     <button type="button" class="btn btn-secondary"
-                                         data-dismiss="modal">Cancle</button>
-                                     <button type="button" class="btn btn-primary" onclick="lockunlockDevice()"
-                                         id="lockunlocksubmitbtn">Lock / Unlock device</button>
-                                 </div>
-                             </div>
-                         </div>
-                     </div>
+                                            <div class="form-group">
+                                                <label id="lockunlocklable"></label>
+                                                <input type="hidden" name="email" id="lockunlockemail"
+                                                    class="form-control">
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal" id="modal_cancel_btn"></button>
+                                        <button type="button" class="btn btn-primary" onclick="lockUnlockDevice()"
+                                            id="lockunlocksubmitbtn"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
 
 
@@ -578,6 +600,11 @@
         if ('<%= tab %>' === 'settings') {
             var settingsbtn = document.getElementById('settings-btn');
             settingsbtn.classList.add('active');
+        }
+        if ('<%= tab %>' === 'logs') {
+            var logsbtn = document.getElementById('logs-btn');
+            logsbtn.classList.add('active');
+            document.getElementById('logs_container').style.display = 'block';
         }
     }
     if (document.addEventListener) document.addEventListener("DOMContentLoaded", autorun, false);
@@ -692,7 +719,7 @@
     }
 
     function confirmDeviceDelete(uuid) {
-        document.getElementById('deleteuuidlable').innerText += uuid + " )?";
+        document.getElementById('deleteuuidlable').innerText += uuid + ")?\nAll the device log history will be lost!";
         document.getElementById('deleteuuid').value = uuid;
     }
 
@@ -769,30 +796,191 @@
 
     function confirmLockUnlock(status, uuid) {
         var lockunlockuuid = document.getElementById('lockunlockuuid'),
-        lockunlocklable = document.getElementById('lockunlocklable'),
-        lockunlockstatus = document.getElementById('lockunlockstatus'),
-        lockunlockemail = document.getElementById('lockunlockemail'),
-        lockunlocksubmitbtn = document.getElementById('lockunlocksubmitbtn');
+            lockunlocklable = document.getElementById('lockunlocklable'),
+            lockunlockstatus = document.getElementById('lockunlockstatus'),
+            lockunlockemail = document.getElementById('lockunlockemail'),
+            lockunlocksubmitbtn = document.getElementById('lockunlocksubmitbtn'),modal_cancel_btn
+            modalCancelBtn = document.getElementById('modal_cancel_btn');
         lockunlockuuid.value = uuid;
-        lockunlockemail.value = status;
+        lockunlockstatus.value = status;
         if (status === 'Deactivated') {
             lockunlocklable.innerText = 'Device deactivated, Are you sure you want to activate it?';
             lockunlocksubmitbtn.innerText = 'Activate device';
-            lockunlocksubmitbtn.style.display = 'inline-block';            
+            lockunlocksubmitbtn.style.display = 'inline-block';
+            modalCancelBtn.innerText = 'Cancel';
+            
         } else if (status === 'Unregistered') {
-            lockunlocklable.innerText = 'Type in the account you want to link the device to:';
-            lockunlocksubmitbtn.innerText = 'Link device';
-            lockunlocksubmitbtn.style.display = 'none';
-            lockunlockstatus.value = status;          
+            lockunlocklable.innerText = 'Device activated, Are you sure you want to deactivate it?';
+            lockunlocksubmitbtn.innerText = 'Deactivate device';
+            lockunlocksubmitbtn.style.display = 'inline-block';
+            lockunlockstatus.value = status;
+            modalCancelBtn.innerText = 'Cancel';
+            
         } else {
             lockunlocklable.innerText = 'Device registered to an account, You need to unregister it first.';
             lockunlocksubmitbtn.style.display = 'none';
-            lockunlockstatus.value = status;        
+            lockunlockstatus.value = status;
+            modalCancelBtn.innerText = 'Ok';
         }
     }
 
     function lockUnlockDevice() {
-        
+        var lockunlockuuid = document.getElementById('lockunlockuuid').value,
+            lockunlockstatus = document.getElementById('lockunlockstatus').value;
+            console.log(lockunlockstatus)
+        if (lockunlockstatus === 'Deactivated') {
+            var xhr = new XMLHttpRequest();
+            xhr.open('PUT', '/api/device?uuid=' + lockunlockuuid);
+            xhr.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    document.getElementById("devicesmsg").value = this.responseText;
+                    document.getElementById("devicesform").submit();
+                }
+            };
+            xhr.setRequestHeader('x-access-token', '<%= user.token %>');
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.send('email=Unregistered');
+        } else if (lockunlockstatus === 'Unregistered') {
+            var xhr = new XMLHttpRequest();
+            xhr.open('PUT', '/api/device?uuid=' + lockunlockuuid);
+            xhr.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    document.getElementById("devicesmsg").value = this.responseText;
+                    document.getElementById("devicesform").submit();
+                }
+            };
+            xhr.setRequestHeader('x-access-token', '<%= user.token %>');
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.send('email=Deactivated');
+        } else {
+            console.log("Request invalid");
+        }
     }
 
+</script>
+
+<script>
+    var searchIcon = document.getElementById('search_icon');
+    var selectMenu = document.getElementById('log_select');
+    selectMenu.addEventListener('change', () => {
+        if (selectMenu.value === 'data') {
+            document.getElementById('uuid_log_search').style.display = 'inline-block';
+        } else {
+            document.getElementById('uuid_log_search').style.display = 'none';
+        }
+    });
+    searchIcon.addEventListener('click', () => {
+        var loader = document.getElementById('loader_container');
+        var type = selectMenu.value;
+        var date = document.getElementById('log_date').value;
+        var logerrmsg = document.getElementById('logerrormsg');
+        var systemlogtable = document.getElementById('systemlogtable');
+        var uuid = document.getElementById('uuid_log_search').value;
+        if (!date) {
+            logerrmsg.style.display = 'block';
+            logerrmsg.innerText = 'insert a date before clicking search!';
+        } else {
+            loader.style.display = 'block';
+            systemlogtable.innerHTML = '';
+            logerrmsg.innerText = '';
+            var xhr = new XMLHttpRequest();            
+            xhr.open('GET', `/api/log/${type}?date=${date}&uuid=${uuid}`);          
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    loader.style.display = 'none';
+                    var records = JSON.parse(xhr.responseText);
+                    if (records.err) {
+                        systemlogtable.style.display = 'none';
+                        logerrmsg.style.display = 'block';
+                        logerrmsg.innerText = records.error;
+                    } else {
+                        logerrmsg.style.display = 'none';
+                        
+                        systemlogtable.style.display = 'block';
+
+                        if (type === 'system') {
+                            
+                        } else if (type === 'users') {
+                            systemlogtable.innerHTML = `<thead>
+                                    <th scope="col">Action</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Details</th>
+                                    <th scope="col">Account</th>
+                                    <th scope="col">Created on</th>
+                                </thead>`;
+                        var index = 1;
+                        records.forEach(record => {
+                            var row = systemlogtable.insertRow(index++);
+                            var cell1 = row.insertCell(0);
+                            var cell2 = row.insertCell(1);
+                            var cell3 = row.insertCell(2);
+                            var cell4 = row.insertCell(3);
+                            var cell5 = row.insertCell(4);
+                            cell1.innerHTML = record.action;
+                            cell2.innerHTML = record.msg_type;
+                            cell3.innerHTML = record.msg_details;
+                            cell4.innerHTML = record.account;
+                            cell5.innerHTML = record.date;
+                        });
+                        } else if (type === 'devices') {
+                            systemlogtable.innerHTML = `<thead>
+                                    <th scope="col">Action</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Details</th>
+                                    <th scope="col">UUID</th>
+                                    <th scope="col">Account</th>
+                                    <th scope="col">Created on</th>
+                                </thead>`;
+                        var index = 1;
+                        records.forEach(record => {
+                            var row = systemlogtable.insertRow(index++);
+                            var cell1 = row.insertCell(0);
+                            var cell2 = row.insertCell(1);
+                            var cell3 = row.insertCell(2);
+                            var cell4 = row.insertCell(3);
+                            var cell5 = row.insertCell(4);
+                            var cell6 = row.insertCell(5);
+                            cell1.innerHTML = record.action;
+                            cell2.innerHTML = record.msg_type;
+                            cell3.innerHTML = record.msg_details;
+                            cell4.innerHTML = record.uuid;
+                            cell5.innerHTML = record.account;
+                            cell6.innerHTML = record.date;
+                        });
+                        }
+                        else if (type === 'data') {
+                            systemlogtable.innerHTML = `<thead>
+                                    <th scope="col">Action</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Details</th>
+                                    <th scope="col">UUID</th>
+                                    <th scope="col">Account</th>
+                                    <th scope="col">Created on</th>
+                                </thead>`;
+                        var index = 1;
+                        records.forEach(record => {
+                            var row = systemlogtable.insertRow(index++);
+                            var cell1 = row.insertCell(0);
+                            var cell2 = row.insertCell(1);
+                            var cell3 = row.insertCell(2);
+                            var cell4 = row.insertCell(3);
+                            var cell5 = row.insertCell(4);
+                            var cell6 = row.insertCell(5);
+                            cell1.innerHTML = record.action;
+                            cell2.innerHTML = record.msg_type;
+                            cell3.innerHTML = record.msg_details;
+                            cell4.innerHTML = record.uuid;
+                            cell5.innerHTML = record.account;
+                            cell6.innerHTML = record.date;
+                        });
+                        }
+                        
+                    }
+                }
+            };
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.setRequestHeader('x-access-token', '<%= user.token %>');
+            xhr.send();
+        }
+    });
 </script>

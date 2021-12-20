@@ -1,6 +1,3 @@
-body {
-  background-color: #eef5f94d;
-}
 
 .header {
   background-color: #414755;
@@ -45,4 +42,159 @@ body {
 
 .card {
   background-color: #ffffff46;
+}
+
+.main {
+  margin-top: 30px;
+  height: 1000px;
+  background-color: #404040;
+}
+
+.device-btn {
+  margin-top: 15px;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.device-btn:hover {
+  background-color: orangered;
+}
+
+.usr-device-list {
+  display: none;
+}
+
+.user-btns-cont {
+  float: right;
+  position: relative;
+  top: 12px;
+}
+
+.user-btn {
+  margin-left: 20px;
+  margin-right: 10px;
+  height: 35px;
+  width: 35px;
+  position: relative;
+  top: 7px;
+}
+
+.status-ind {
+  width: 8px; 
+  height: 65px; 
+  display: inline-block;
+  position: relative;
+  right: 11px;
+  top: 36px;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+/* .canvas-container {
+  width: 100%;
+} */
+
+.timeframe-btns-container {
+  border: 2px solid 'white';
+  padding: 5px;
+}
+
+.timeframe-btn {
+  padding: 3px;
+  width: 100px;
+  height: auto;
+  display: inline-block;
+  font-weight: bold;
+  background-color: antiquewhite;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 5px;
+  margin: 3px;
+}
+
+.active-timeframe-btn {
+  background-color: #174050;
+  border: 2px inset antiquewhite;
+  width: 96px;
+  height: auto;
+}
+
+.logs-container {
+  display: none;
+}
+
+.log-table {
+  white-space: nowrap
+}
+
+.log-select {
+  display: inline-block;
+  padding: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 5px;
+  margin-right: 20px;
+  vertical-align: middle;
+}
+
+.log-date {
+  display: inline-block;
+  padding: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 5px;
+  margin-right: 20px;
+  vertical-align: middle;
+  
+}
+
+.fa-search {
+  display: inline-block;
+  font-size: 18px;
+  font-weight: bold;
+  color: #0E2B36;
+  background-color: whitesmoke;
+  padding: 8px;
+  border-radius: 4px;
+  vertical-align: middle;
+}
+
+.lds-ripple {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+.lds-ripple div {
+  position: absolute;
+  border: 4px solid #fff;
+  opacity: 1;
+  border-radius: 50%;
+  animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+.lds-ripple div:nth-child(2) {
+  animation-delay: -0.5s;
+}
+@keyframes lds-ripple {
+  0% {
+    top: 36px;
+    left: 36px;
+    width: 0;
+    height: 0;
+    opacity: 1;
+  }
+  100% {
+    top: 0px;
+    left: 0px;
+    width: 72px;
+    height: 72px;
+    opacity: 0;
+  }
+}
+
+.loader-container {
+  position: relative;
+  text-align: center;
+  display: none;
+  
 }

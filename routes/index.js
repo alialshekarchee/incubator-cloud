@@ -11,6 +11,10 @@ const Device = require('../models/Device');
 router.get('/', forwardAuthenticated, (req, res) => res.render('home'));
 // User Dashboard
 router.get('/dashboard', ensureAuthenticated, (req, res) => {
+  var tab = '';
+  if (req.query.tab) {
+    tab = req.query.tab;
+  }
   const token = jwt.sign(req.user.email, 'top-secret');
   User.findOne({ email: req.user.email }).then(user => {
     user.token = token;
@@ -19,21 +23,21 @@ router.get('/dashboard', ensureAuthenticated, (req, res) => {
       if (typeof req.query.email !== 'undefined' && req.query.email) {
         User.findOne({ email: req.query.email }).then(usr => {
           Device.find({ email: usr.email }).then(devices => {
-            res.render('dashboard', { user: usr, devices: devices, msg: { msg_type: '', msg_details: '' }, tab: '' });
+            res.render('dashboard', { user: usr, devices: devices, msg: { msg_type: '', msg_details: '' }, tab: tab });
           }).catch(err => console.log(err));          
         }).catch(err => console.log(err));
 
       } else {
         User.find().then(users => {
           Device.find().then(devices => {
-            res.render('admindashboard', { user: user, users: users, devices: devices, msg: { msg_type: '', msg_details: '' }, tab: '' });
+            res.render('admindashboard', { user: user, users: users, devices: devices, msg: { msg_type: '', msg_details: '' }, tab: tab });
           }).catch(err => console.log(err));
         }).catch(err => console.log(err));
 
       }
     } else {
       Device.find({token: req.user.token}).then(devices => {
-        res.render('dashboard', { user: user, devices: devices, msg: { msg_type: '', msg_details: '' }, tab: '' });
+        res.render('dashboard', { user: user, devices: devices, msg: { msg_type: '', msg_details: '' }, tab: tab });
       }).catch(err => console.log(err));
     }
   }).catch(err => console.log(err));
@@ -74,6 +78,22 @@ router.post('/admindashboard', ensureAuthenticated, ensureAdmin, (req, res) => {
       res.render('admindashboard', { user: req.user, users: users, devices: devices, msg: msg, tab: tab });
     }).catch(err => console.log(err));
   }).catch(err => console.log(err));
+});
+
+router.post('/dashboard', ensureAuthenticated, (req, res) => {
+  var tab = '';
+  if (req.query.tab) {
+    tab = req.query.tab;
+  }
+  var msg = { msg_type: '', msg_details: '' };
+  if (typeof req.body.msg !== 'undefined' && req.body.msg) {
+    msg.msg_type = JSON.parse(req.body.msg).msg_type;
+    msg.msg_details = JSON.parse(req.body.msg).msg_details;
+  }
+      Device.find( {email: req.user.email} ).then(devices => {
+      res.render('dashboard', { user: req.user, devices: devices, msg: msg, tab: tab });
+    }).catch(err => console.log(err));
+  
 });
 
 // Websocket
